@@ -77,6 +77,7 @@
             left: 15px;
             z-index: 1000;
             display: flex;
+            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
             gap: 8px; /* Spacing between buttons */
             background-color: rgba(0, 0, 0, 0.3); /* Subtle background */
             padding: 5px;
@@ -113,9 +114,10 @@
 
         /* Tab Content Area */
         main {
-            padding: 80px 30px 30px; /* More top padding */
-            height: calc(100vh - 110px); /* Full height minus padding */
+            padding: 90px 30px 30px; /* More top padding needed if tabs wrap */
+            height: calc(100vh - 120px); /* Full height minus padding */
             overflow-y: auto; /* Allow scrolling within content */
+            box-sizing: border-box;
         }
 
         .tab-content {
@@ -137,10 +139,10 @@
             background: var(--button-bg);
             border: 2px solid var(--primary-color);
             color: var(--button-text);
-            padding: 12px 30px;
-            font-size: 1.1em;
+            padding: 12px 25px; /* Slightly less padding horiz */
+            font-size: 1.0em; /* Slightly smaller */
             border-radius: 10px;
-            box-shadow: 0 0 var(--neon-blur-current) var(--shadow-color), inset 0 0 5px rgba(var(--primary-color-rgb), 0.3); /* Inner glow */
+            box-shadow: 0 0 var(--neon-blur-current) var(--shadow-color), inset 0 0 5px rgba(var(--primary-color-rgb, 255, 0, 0), 0.3); /* Default RGB */
             cursor: pointer;
             margin: 8px 5px;
             transition: transform var(--transition-speed) ease,
@@ -148,10 +150,13 @@
                         background-color var(--transition-speed) ease,
                         color var(--transition-speed) ease;
             font-family: inherit;
+            text-decoration: none; /* For link buttons */
+            display: inline-block; /* Ensure links behave like buttons */
+            vertical-align: middle; /* Align with text inputs */
         }
 
         .neon-btn:hover {
-            box-shadow: 0 0 var(--neon-blur-hover-current) var(--shadow-color), inset 0 0 10px rgba(var(--primary-color-rgb), 0.5);
+            box-shadow: 0 0 var(--neon-blur-hover-current) var(--shadow-color), inset 0 0 10px rgba(var(--primary-color-rgb, 255, 0, 0), 0.5);
             transform: scale(1.05);
             background-color: var(--primary-color);
             color: var(--bg-color);
@@ -162,16 +167,18 @@
 
         /* Custom Crosshair */
         .crosshair {
-            position: fixed;
-            top: 50%;
-            left: 50%;
+            position: fixed; /* Crucial for following cursor */
             width: 24px; /* Size of the cross */
             height: 24px;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%); /* Center on cursor */
             pointer-events: none;
             z-index: 2000;
+            opacity: 0; /* Start hidden */
+            transition: opacity 0.2s ease;
         }
-        /* Create the cross using pseudo-elements */
+        body:hover .crosshair { /* Show when mouse is over the body */
+            opacity: 1;
+        }
         .crosshair::before,
         .crosshair::after {
             content: '';
@@ -180,57 +187,75 @@
             box-shadow: 0 0 5px var(--shadow-color);
             transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
         }
-        /* Vertical line */
-        .crosshair::before {
-            left: 50%;
-            top: 0;
-            width: 2px; /* Line thickness */
-            height: 100%;
-            transform: translateX(-50%);
+        .crosshair::before { /* Vertical line */
+            left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%);
         }
-        /* Horizontal line */
-        .crosshair::after {
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 2px; /* Line thickness */
-            transform: translateY(-50%);
+        .crosshair::after { /* Horizontal line */
+            top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%);
         }
 
         /* Iframe Styling */
         iframe {
             width: calc(100% - 4px); /* Account for border */
-            height: 75vh; /* Adjust as needed */
+            height: 70vh; /* Adjusted */
             border: 2px solid var(--primary-color);
             filter: drop-shadow(0 0 10px var(--shadow-color));
             transition: border-color var(--transition-speed) ease, filter var(--transition-speed) ease;
             background-color: var(--bg-color); /* Background for loading */
+            margin-top: 10px;
         }
 
         /* Input Fields */
         input[type="text"],
-        input[type="password"] {
+        input[type="password"],
+        select,
+        textarea { /* Added select and textarea */
             background-color: var(--input-bg);
             border: 1px solid var(--input-border);
             color: var(--text-color);
             padding: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             border-radius: 5px;
             font-family: inherit;
-            width: 250px; /* Or adjust as needed */
+            width: 95%; /* More responsive width */
+            max-width: 300px; /* Max width */
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
              transition: background-color var(--transition-speed) ease,
                          border-color var(--transition-speed) ease,
                          color var(--transition-speed) ease;
+             box-sizing: border-box;
         }
          input[type="text"]:focus,
-         input[type="password"]:focus {
+         input[type="password"]:focus,
+         select:focus,
+         textarea:focus {
              outline: none;
              border-color: var(--primary-color);
              box-shadow: 0 0 8px var(--shadow-color);
          }
 
         /* Pastebin Specific */
+         #pastebin-list-container {
+            max-height: 40vh; /* Adjust max height as needed */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding: 10px;
+            border: 1px solid var(--input-border);
+            border-radius: 5px;
+            margin-top: 10px;
+            background-color: rgba(0,0,0,0.1); /* Subtle background */
+        }
+        #pastebin-list .neon-btn { /* Target buttons *inside* #pastebin-list */
+            display: block; /* Stack vertically */
+            width: calc(100% - 10px); /* Full width minus padding/margin */
+            margin: 5px; /* Consistent margin */
+            margin-bottom: 8px; /* Space between buttons */
+            text-align: left; /* Align text left */
+            padding-left: 15px;
+            box-sizing: border-box;
+        }
+        #pastebin-list .neon-btn:last-child {
+            margin-bottom: 5px; /* Consistent margin */
+        }
         #pastebin-content {
             white-space: pre-wrap;
             background: var(--input-bg); /* Use input background */
@@ -238,7 +263,7 @@
             border: 1px solid var(--input-border);
             box-shadow: 0 0 10px var(--shadow-color);
             color: var(--text-color);
-            max-height: 60vh;
+            max-height: 55vh; /* Adjusted */
             overflow-y: auto;
             border-radius: 5px;
             margin-bottom: 15px;
@@ -246,12 +271,24 @@
                         border-color var(--transition-speed) ease,
                         color var(--transition-speed) ease;
         }
-
         #pastebin-view { display: none; }
-        #pastebin-list button { margin: 5px; } /* Add some space */
+
+        /* Class List Specific */
+        #class-list .neon-btn { /* Target buttons *inside* #class-list */
+            display: block; /* Stack vertically */
+            width: fit-content; /* Or set a specific width */
+            min-width: 150px; /* Ensure minimum width */
+            margin-bottom: 10px; /* Space between buttons */
+            margin-left: 0;
+            margin-right: 0;
+            text-align: left;
+            padding-left: 15px;
+        }
+        .link-btn { margin-top: 15px; }
 
         /* Utility Classes */
         .hidden { display: none; }
+        .small-text { font-size: 0.8em; opacity: 0.7; margin-top: 5px; display: block; }
 
         /* Feedback Message */
         .feedback-message {
@@ -267,6 +304,7 @@
             opacity: 0;
             transition: opacity 0.5s ease, bottom 0.5s ease;
             pointer-events: none; /* Don't block clicks */
+            text-align: center;
         }
         .feedback-message.show {
             opacity: 1;
@@ -277,9 +315,100 @@
             color: var(--primary-color); /* Use primary color for headers */
             border-bottom: 1px solid var(--primary-color);
             padding-bottom: 5px;
+            margin-bottom: 15px;
             display: inline-block;
              transition: color var(--transition-speed) ease, border-color var(--transition-speed) ease;
         }
+
+        /* Chat UI Specific Styles */
+        #chat-container {
+            display: flex;
+            flex-direction: column;
+            height: 75vh; /* Adjust height as needed */
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            overflow: hidden; /* Contain children */
+            background-color: var(--input-bg);
+        }
+        #chat-messages {
+            flex-grow: 1; /* Take available space */
+            overflow-y: auto; /* Scroll for messages */
+            padding: 15px;
+            display: flex;
+            flex-direction: column; /* Stack messages */
+        }
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .message.user {
+            background-color: var(--primary-color);
+            color: var(--bg-color);
+            border-bottom-right-radius: 5px;
+            align-self: flex-end; /* Align user messages right */
+            margin-left: auto; /* Push to right */
+        }
+        .message.assistant {
+            background-color: #333; /* Darker grey for assistant in dark */
+            color: var(--text-color);
+            border-bottom-left-radius: 5px;
+            align-self: flex-start; /* Align assistant messages left */
+            margin-right: auto; /* Push to left */
+        }
+        body.light-theme .message.assistant {
+            background-color: #e9ecef; /* Lighter grey for light theme */
+        }
+        .message.error {
+             background-color: #8b0000; /* Dark red for errors */
+             color: white;
+             border-radius: 5px;
+             align-self: center;
+             max-width: 90%;
+             text-align: center;
+        }
+        #chat-input-area {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid var(--input-border);
+            background-color: rgba(0,0,0,0.1);
+        }
+        #chat-input {
+            flex-grow: 1;
+            margin: 0 10px 0 0;
+            resize: none; /* Prevent manual resize */
+            height: 40px; /* Initial height */
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        #send-chat-btn {
+            margin: 0;
+            padding: 0 20px; /* Adjust padding */
+            height: 40px; /* Match input height */
+        }
+        #chat-settings {
+            padding: 10px 15px;
+            border-bottom: 1px solid var(--input-border);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            font-size: 0.9em;
+        }
+         #chat-settings label { margin-right: 5px; }
+         #chat-settings select, #chat-settings input[type="range"] {
+             padding: 5px;
+             margin-bottom: 0;
+             max-width: 180px; /* Limit width of controls */
+         }
+         #chat-settings input[type="range"] {
+             vertical-align: middle;
+             width: 100px;
+         }
+         #temp-value { font-weight: bold; min-width: 30px; display: inline-block; text-align: right; }
 
     </style>
 </head>
@@ -291,6 +420,7 @@
     <nav class="tabs">
         <button class="tab-button" data-tab="class">🎓 Class</button>
         <button class="tab-button" data-tab="pastebin">📋 Pastebins</button>
+        <button class="tab-button" data-tab="chat">💬 Chat AI</button> <!-- Added Chat Tab -->
         <button class="tab-button" data-tab="weao">🌐 Weao</button>
         <button class="tab-button" data-tab="alarm">⏰ Alarm</button>
         <button class="tab-button" data-tab="gaming">🎮 Gaming</button>
@@ -300,32 +430,74 @@
     <!-- Main Content Area -->
     <main>
         <section id="class" class="tab-content">
-            <h2>K12 Login (Local Storage)</h2>
+            <h2>K12 Login & Links</h2>
             <div id="login-form">
-                <input type="text" id="user" placeholder="Username"/><br>
-                <input type="password" id="pass" placeholder="Password"/><br>
-                <button class="neon-btn" id="save-login-btn">Save Credentials</button>
-                <button class="neon-btn" id="clear-login-btn">Clear Credentials</button>
+                <input type="text" id="user" placeholder="Username (saved locally)"/><br>
+                <input type="password" id="pass" placeholder="Password (saved locally)"/><br>
+                <button class="neon-btn" id="save-login-btn">Save</button>
+                <button class="neon-btn" id="clear-login-btn">Clear</button>
             </div>
+            <!-- Add this link/button -->
+            <a href="https://login-learn.k12.com/#schedule" target="_blank" rel="noopener noreferrer" class="neon-btn link-btn">
+                Open K12 Schedule Page ↗️
+            </a>
+            <span class="small-text">
+                Note: Login details are saved in your browser only for *these fields*. This dashboard cannot auto-login or fetch your live schedule due to security limitations.
+            </span>
             <div id="class-buttons" class="hidden">
-                <h3>Your Classes (Example)</h3>
+                <h3>Example Class Links</h3>
                 <div id="class-list">
-                    <!-- Class buttons will be loaded here -->
+                    <!-- Class buttons will be loaded here (now vertically) -->
                 </div>
             </div>
         </section>
 
         <section id="pastebin" class="tab-content">
             <h2>Pastebins</h2>
-            <div id="pastebin-list">
-                <!-- Pastebin buttons will be loaded here -->
-                 <p>Loading pastebin links...</p>
+            <div id="pastebin-list-container">
+                <div id="pastebin-list">
+                     <p>Loading pastebin links...</p>
+                </div>
             </div>
+            <span class="small-text">
+                Note: Shows manually configured pastes. Fetching directly from user pages is limited by browser security (CORS).
+            </span>
             <div id="pastebin-view" class="hidden">
                  <div id="pastebin-loading" class="hidden">Loading content...</div>
                 <pre id="pastebin-content"></pre>
                 <button class="neon-btn" id="copy-pastebin-btn">📋 Copy</button>
                 <button class="neon-btn" id="back-to-pastebin-list-btn">🔙 Back</button>
+            </div>
+        </section>
+
+        <!-- Chat AI Tab Content -->
+        <section id="chat" class="tab-content">
+            <h2>Chat with Gemini AI</h2>
+             <div id="api-key-warning" style="color: yellow; background: #300; padding: 10px; border: 1px solid yellow; border-radius: 5px; margin-bottom: 15px;">
+                <strong>Security Warning:</strong> To use this chat, you MUST set up a secure backend (like a Vercel Serverless Function at <code>/api/chat</code>) to handle your API key. Never put your API key directly in this frontend code.
+            </div>
+            <div id="chat-settings">
+                 <label for="chat-model">Model:</label>
+                 <select id="chat-model">
+                     <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro</option>
+                     <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash</option>
+                     <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
+                     <!-- Add other models as needed -->
+                 </select>
+                 <label for="chat-temp">Temp:</label>
+                 <input type="range" id="chat-temp" min="0" max="1" step="0.1" value="0.7">
+                 <span id="temp-value">0.7</span>
+                 <!-- Add toggles for function calling/code execution here if implementing advanced features -->
+            </div>
+            <div id="chat-container">
+                <div id="chat-messages">
+                    <!-- Chat messages will appear here -->
+                    <div class="message assistant">Hello! How can I help you today? Remember to set up the secure backend for API calls.</div>
+                </div>
+                <div id="chat-input-area">
+                    <textarea id="chat-input" placeholder="Type your message..." rows="1"></textarea>
+                    <button id="send-chat-btn" class="neon-btn">Send</button>
+                </div>
             </div>
         </section>
 
@@ -337,14 +509,13 @@
         <section id="alarm" class="tab-content">
             <h2>Class Alarm</h2>
             <button class="neon-btn" id="play-alarm-btn">🔔 Play Random Sound</button>
-            <!-- Keep audio elements hidden, control via JS -->
             <audio id="alarm-sound1" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" preload="auto"></audio>
             <audio id="alarm-sound2" src="https://www.soundjay.com/buttons/sounds/beep-10.mp3" preload="auto"></audio>
         </section>
 
         <section id="gaming" class="tab-content">
             <h2>Xbox Cloud Gaming</h2>
-            <iframe src="https://www.xbox.com/play" title="Xbox Cloud Gaming" style="height:80vh;"></iframe>
+            <iframe src="https://www.xbox.com/play" title="Xbox Cloud Gaming" style="height:75vh;"></iframe>
         </section>
     </main>
 
@@ -357,15 +528,17 @@
         const K12_PASS_KEY = 'dashboard_k12pass';
         const THEME_KEY = 'dashboard_theme';
         const DEFAULT_THEME = 'dark-theme'; // 'dark-theme' or 'light-theme'
+        const CHAT_HISTORY_KEY = 'dashboard_chat_history'; // For saving chat locally
 
-        // Example class names (replace with actual data source if needed)
+        // Example class names
         const CLASS_NAMES = ['Math', 'Science', 'History', 'English', 'PE', 'Art'];
 
-        // Pastebin Configuration
+        // Pastebin Configuration (Manually Update)
         const PASTEBIN_LINKS = [
-            { name: 'Script Alpha', url: 'https://pastebin.com/raw/MfSLGYzP' }, // Example valid raw link
-            { name: 'Script Beta', url: 'https://pastebin.com/raw/gZDbqP4G' }, // Another example
-            { name: 'Invalid URL (Test)', url: 'https://invalid.url/raw/test' } // For error handling test
+            { name: 'Example Script 1', url: 'https://pastebin.com/raw/MfSLGYzP' },
+            { name: 'Example Script 2', url: 'https://pastebin.com/raw/gZDbqP4G' },
+            // Add your actual pastebin raw links here
+            // { name: 'My Cool Script', url: 'https://pastebin.com/raw/YOUR_ID_HERE' },
         ];
 
         // --- DOM Elements ---
@@ -374,6 +547,7 @@
         const themeToggleButton = document.getElementById('theme-toggle');
         const body = document.body;
         const feedbackElement = document.getElementById('feedback');
+        const crosshair = document.querySelector('.crosshair');
 
         // Class Tab Elements
         const userField = document.getElementById('user');
@@ -401,19 +575,23 @@
         // Weao Iframe
         const weaoIframe = document.getElementById('weao-iframe');
 
+        // Chat Tab Elements
+        const chatMessagesDiv = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const sendChatBtn = document.getElementById('send-chat-btn');
+        const chatModelSelect = document.getElementById('chat-model');
+        const chatTempSlider = document.getElementById('chat-temp');
+        const tempValueSpan = document.getElementById('temp-value');
+
+        // --- Global Variables ---
+        let chatHistory = []; // To store chat messages { role: 'user'/'assistant', content: '...' }
+
         // --- Functions ---
 
-        /**
-         * Shows a specific tab and hides others.
-         * @param {string} tabId The ID of the tab content to show.
-         */
+        /** Shows a specific tab and hides others. */
         function showTab(tabId) {
-            tabContents.forEach(content => {
-                content.classList.remove('active');
-            });
-            tabButtons.forEach(button => {
-                button.classList.remove('active');
-            });
+            tabContents.forEach(content => content.classList.remove('active'));
+            tabButtons.forEach(button => button.classList.remove('active'));
 
             const activeContent = document.getElementById(tabId);
             const activeButton = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
@@ -421,48 +599,47 @@
             if (activeContent) activeContent.classList.add('active');
             if (activeButton) activeButton.classList.add('active');
 
-            // Special handling for iframe loading if needed
-             if (tabId === 'weao' && weaoIframe.src !== 'https://weao.xyz') {
-                 // weaoIframe.src = 'https://weao.xyz'; // Uncomment if you want to reload on tab switch
-             }
-             if (tabId === 'gaming' /* && xboxIframe.src !== '...' */) {
-                 // Handle Xbox iframe if necessary
+            // Update URL hash for potential bookmarking/linking
+            // Debounce or delay this if it causes issues on rapid clicks
+            window.location.hash = tabId;
+
+             // Auto-scroll chat to bottom when switching to it
+             if (tabId === 'chat') {
+                 scrollToChatBottom();
              }
         }
 
-        /**
-         * Sets the theme on the body and saves preference.
-         * @param {string} themeName Class name for the theme (e.g., 'dark-theme').
-         */
+        /** Sets the theme on the body and saves preference. */
         function setTheme(themeName) {
             body.className = ''; // Clear existing theme classes
             body.classList.add(themeName);
             localStorage.setItem(THEME_KEY, themeName);
             updateThemeToggleButton(themeName);
-            // Convert hex to RGB for CSS variable (needed for rgba)
-            setPrimaryColorRGB(themeName);
-             // Send theme update to Weao iframe
-             sendThemeToIframe(themeName);
+            setPrimaryColorRGB(themeName); // Update RGB variable
+            sendThemeToIframe(themeName); // Send theme update to Weao iframe
         }
 
         /** Helper to set RGB version of primary color for effects like inset shadow */
         function setPrimaryColorRGB(themeName) {
-            const style = getComputedStyle(document.documentElement);
-            const primaryColorHex = style.getPropertyValue(themeName === 'dark-theme' ? '--primary-color-dark' : '--primary-color-light').trim();
-            // Basic hex to RGB conversion
-            let r = 0, g = 0, b = 0;
-            if (primaryColorHex.length === 7) { // #RRGGBB
-                r = parseInt(primaryColorHex.substring(1, 3), 16);
-                g = parseInt(primaryColorHex.substring(3, 5), 16);
-                b = parseInt(primaryColorHex.substring(5, 7), 16);
-            } else if (primaryColorHex.length === 4) { // #RGB
-                 r = parseInt(primaryColorHex.substring(1, 2) + primaryColorHex.substring(1, 2), 16);
-                 g = parseInt(primaryColorHex.substring(2, 3) + primaryColorHex.substring(2, 3), 16);
-                 b = parseInt(primaryColorHex.substring(3, 4) + primaryColorHex.substring(3, 4), 16);
+            try {
+                const style = getComputedStyle(document.documentElement);
+                const primaryColorHex = style.getPropertyValue(themeName === 'dark-theme' ? '--primary-color-dark' : '--primary-color-light').trim();
+                let r = 0, g = 0, b = 0;
+                if (primaryColorHex.length === 7) { // #RRGGBB
+                    r = parseInt(primaryColorHex.substring(1, 3), 16);
+                    g = parseInt(primaryColorHex.substring(3, 5), 16);
+                    b = parseInt(primaryColorHex.substring(5, 7), 16);
+                } else if (primaryColorHex.length === 4) { // #RGB
+                    r = parseInt(primaryColorHex.substring(1, 2) + primaryColorHex.substring(1, 2), 16);
+                    g = parseInt(primaryColorHex.substring(2, 3) + primaryColorHex.substring(2, 3), 16);
+                    b = parseInt(primaryColorHex.substring(3, 4) + primaryColorHex.substring(3, 4), 16);
+                }
+                document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
+            } catch (e) {
+                console.error("Error setting primary color RGB:", e);
+                 document.documentElement.style.setProperty('--primary-color-rgb', `255, 0, 0`); // Fallback
             }
-            document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
         }
-
 
         /** Toggles between dark and light themes. */
         function toggleTheme() {
@@ -479,15 +656,11 @@
         /** Saves K12 login credentials to localStorage. */
         function saveLogin() {
             const user = userField.value.trim();
-            const pass = passField.value.trim();
-            if (user && pass) {
-                localStorage.setItem(K12_USER_KEY, user);
-                localStorage.setItem(K12_PASS_KEY, pass);
-                showFeedback("Credentials saved locally.");
-                displayClassButtons(); // Show buttons after saving
-            } else {
-                showFeedback("Please enter both username and password.", "error");
-            }
+            const pass = passField.value.trim(); // WARNING: Storing passwords this way is insecure.
+            if (user) localStorage.setItem(K12_USER_KEY, user); else localStorage.removeItem(K12_USER_KEY);
+            if (pass) localStorage.setItem(K12_PASS_KEY, pass); else localStorage.removeItem(K12_PASS_KEY);
+            showFeedback(user || pass ? "Credentials saved locally." : "Credentials cleared.");
+            displayClassButtons(); // Update button visibility based on saved state
         }
 
         /** Loads K12 credentials from localStorage if they exist. */
@@ -495,12 +668,8 @@
             const user = localStorage.getItem(K12_USER_KEY);
             const pass = localStorage.getItem(K12_PASS_KEY);
             if (user) userField.value = user;
-            if (pass) passField.value = pass; // Note: Storing passwords in localStorage is generally insecure for real applications.
-            if (user && pass) {
-                displayClassButtons();
-            } else {
-                 classButtonsContainer.classList.add('hidden');
-            }
+            if (pass) passField.value = pass;
+            displayClassButtons(); // Show buttons if credentials exist
         }
 
         /** Clears saved K12 credentials. */
@@ -516,23 +685,39 @@
 
         /** Displays the class buttons section and populates it. */
         function displayClassButtons() {
-            classListDiv.innerHTML = ''; // Clear existing buttons
-            CLASS_NAMES.forEach(className => {
-                const btn = document.createElement('button');
-                btn.textContent = className;
-                btn.classList.add('neon-btn');
-                btn.addEventListener('click', () => {
-                    // Add functionality here - e.g., open a specific class link
-                    showFeedback(`Clicked on ${className} (add link functionality)`);
-                });
-                classListDiv.appendChild(btn);
-            });
-            classButtonsContainer.classList.remove('hidden');
+            const user = localStorage.getItem(K12_USER_KEY);
+            // Only show example buttons if user has entered something (even if insecurely stored)
+            if (user) {
+                 classListDiv.innerHTML = ''; // Clear existing buttons
+                 if (CLASS_NAMES.length === 0) {
+                     classListDiv.innerHTML = '<p>No example classes configured.</p>';
+                 } else {
+                    CLASS_NAMES.forEach(className => {
+                        const btn = document.createElement('button');
+                        btn.textContent = className;
+                        btn.classList.add('neon-btn');
+                        btn.addEventListener('click', () => {
+                            showFeedback(`Example link for ${className} clicked.`);
+                            // Add actual link logic if desired:
+                            // window.open('https://your-k12-link-base/' + className.toLowerCase(), '_blank');
+                        });
+                        classListDiv.appendChild(btn);
+                    });
+                 }
+                classButtonsContainer.classList.remove('hidden');
+            } else {
+                 classButtonsContainer.classList.add('hidden');
+                 classListDiv.innerHTML = '';
+            }
         }
 
         /** Populates the list of Pastebin buttons. */
         function loadPastebinButtons() {
-            pastebinListDiv.innerHTML = ''; // Clear loading message
+            pastebinListDiv.innerHTML = ''; // Clear loading message or previous buttons
+            if (PASTEBIN_LINKS.length === 0) {
+                pastebinListDiv.innerHTML = '<p>No Pastebin links configured in the script.</p>';
+                return;
+            }
             PASTEBIN_LINKS.forEach(paste => {
                 const btn = document.createElement('button');
                 btn.textContent = paste.name;
@@ -544,7 +729,7 @@
 
         /** Fetches and displays content from a Pastebin raw URL. */
         async function loadPastebinContent(url) {
-            pastebinListDiv.classList.add('hidden');
+            pastebinListDiv.parentElement.classList.add('hidden'); // Hide container
             pastebinViewDiv.classList.remove('hidden');
             pastebinContentPre.textContent = ''; // Clear previous content
             pastebinLoadingDiv.classList.remove('hidden'); // Show loading indicator
@@ -556,12 +741,12 @@
                 }
                 const data = await response.text();
                 pastebinContentPre.textContent = data;
-                pastebinLoadingDiv.classList.add('hidden'); // Hide loading
             } catch (error) {
                 console.error("Failed to load Pastebin content:", error);
                 pastebinContentPre.textContent = `Error loading content from ${url}\n${error.message}`;
-                pastebinLoadingDiv.classList.add('hidden'); // Hide loading
                 showFeedback(`Failed to load pastebin: ${error.message}`, "error");
+            } finally {
+                 pastebinLoadingDiv.classList.add('hidden'); // Hide loading
             }
         }
 
@@ -574,19 +759,6 @@
                     .catch(err => {
                         console.error("Failed to copy text: ", err);
                         showFeedback("Failed to copy content.", "error");
-                        // Fallback for older browsers (less common now)
-                        // try {
-                        //  const textArea = document.createElement('textarea');
-                        //  textArea.value = text;
-                        //  document.body.appendChild(textArea);
-                        //  textArea.select();
-                        //  document.execCommand('copy');
-                        //  document.body.removeChild(textArea);
-                        //  showFeedback("Pastebin content copied!");
-                        // } catch (execErr) {
-                        //  console.error("Fallback copy failed:", execErr);
-                        //  showFeedback("Failed to copy content.", "error");
-                        // }
                     });
             } else if (text) {
                  showFeedback("Clipboard API not available or no content.", "error");
@@ -596,48 +768,161 @@
         /** Hides the Pastebin content view and shows the list. */
         function showPastebinListView() {
             pastebinViewDiv.classList.add('hidden');
-            pastebinListDiv.classList.remove('hidden');
+            pastebinListDiv.parentElement.classList.remove('hidden'); // Show container
         }
 
         /** Plays a random alarm sound from the list. */
         function playRandomAlarm() {
             if (alarmSounds.length > 0) {
-                // Stop any currently playing sound first
-                alarmSounds.forEach(sound => sound.pause());
+                alarmSounds.forEach(sound => sound.pause()); // Stop others
                 const randomIndex = Math.floor(Math.random() * alarmSounds.length);
-                alarmSounds[randomIndex].currentTime = 0; // Rewind to start
+                alarmSounds[randomIndex].currentTime = 0; // Rewind
                 alarmSounds[randomIndex].play().catch(e => console.error("Audio play failed:", e));
             }
         }
 
-        /** Shows a temporary feedback message at the bottom of the screen. */
+        /** Shows a temporary feedback message. */
         let feedbackTimeout;
         function showFeedback(message, type = "info") {
-            clearTimeout(feedbackTimeout); // Clear previous timeout if any
+            clearTimeout(feedbackTimeout);
             feedbackElement.textContent = message;
-            feedbackElement.style.backgroundColor = type === 'error' ? 'var(--primary-color-dark)' : 'var(--primary-color)'; // Use red for errors in dark theme
-             feedbackElement.style.color = 'var(--bg-color)';
+            feedbackElement.className = 'feedback-message'; // Reset classes
+            feedbackElement.classList.add(type === 'error' ? 'error' : 'info'); // Add type class if needed for styling
+            feedbackElement.style.backgroundColor = type === 'error' ? '#800' : 'var(--primary-color)';
+            feedbackElement.style.color = type === 'error' ? 'white' : 'var(--bg-color)';
             feedbackElement.classList.add('show');
 
             feedbackTimeout = setTimeout(() => {
                 feedbackElement.classList.remove('show');
-            }, 3000); // Message disappears after 3 seconds
+            }, 3000);
         }
 
         /** Sends the current theme information to the Weao iframe */
         function sendThemeToIframe(themeName) {
             if (weaoIframe && weaoIframe.contentWindow) {
-                 // Wait for iframe to potentially load if needed, or just send
-                 // Use a slight delay or check iframe loaded state if issues arise
-                setTimeout(() => {
+                setTimeout(() => { // Delay slightly
                     try {
                         weaoIframe.contentWindow.postMessage({ dashboardTheme: themeName }, 'https://weao.xyz');
-                        // console.log(`Sent theme ${themeName} to weao.xyz`);
-                    } catch (e) {
-                        // This can happen due to cross-origin restrictions before iframe loads or if origin doesn't match
-                        // console.warn("Could not send theme message to iframe:", e);
-                    }
-                }, 100); // Small delay allows iframe to potentially initialize
+                    } catch (e) { /* console.warn("Could not send theme message to iframe:", e); */ }
+                }, 100);
+            }
+        }
+
+        // --- Chat Functions ---
+
+        /** Adds a message to the chat UI and history */
+        function addChatMessage(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', role); // role is 'user', 'assistant', or 'error'
+            messageDiv.textContent = content;
+            chatMessagesDiv.appendChild(messageDiv);
+
+            // Add to JS history (don't save errors to history for next session)
+             if (role === 'user' || role === 'assistant') {
+                 chatHistory.push({ role, content });
+                 saveChatHistory(); // Save history to localStorage
+             }
+
+            scrollToChatBottom();
+        }
+
+        /** Scrolls the chat messages div to the bottom */
+        function scrollToChatBottom() {
+            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
+        }
+
+        /** Saves chat history to localStorage */
+        function saveChatHistory() {
+             try {
+                 localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(chatHistory));
+             } catch (e) {
+                 console.error("Error saving chat history:", e);
+                 showFeedback("Could not save chat history (storage full?).", "error");
+             }
+        }
+
+        /** Loads chat history from localStorage */
+        function loadChatHistory() {
+             const savedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
+             if (savedHistory) {
+                 try {
+                     chatHistory = JSON.parse(savedHistory);
+                     // Clear existing messages except maybe the initial greeting
+                     chatMessagesDiv.innerHTML = '<div class="message assistant">Welcome back! Previous chat loaded.</div>';
+                     chatHistory.forEach(msg => {
+                         // Re-add messages without saving again
+                         const messageDiv = document.createElement('div');
+                         messageDiv.classList.add('message', msg.role);
+                         messageDiv.textContent = msg.content;
+                         chatMessagesDiv.appendChild(messageDiv);
+                     });
+                     scrollToChatBottom();
+                 } catch (e) {
+                     console.error("Error loading chat history:", e);
+                     localStorage.removeItem(CHAT_HISTORY_KEY); // Clear corrupted data
+                     chatHistory = []; // Reset history
+                     // Keep initial greeting
+                     chatMessagesDiv.innerHTML = '<div class="message assistant">Hello! How can I help you today? Remember to set up the secure backend for API calls.</div>';
+                 }
+             } else {
+                  // Keep initial greeting if no history
+                  chatMessagesDiv.innerHTML = '<div class="message assistant">Hello! How can I help you today? Remember to set up the secure backend for API calls.</div>';
+             }
+        }
+
+
+        /** Handles sending a chat message */
+        async function sendChatMessage() {
+            const messageText = chatInput.value.trim();
+            if (!messageText) return;
+
+            addChatMessage('user', messageText);
+            chatInput.value = ''; // Clear input
+            chatInput.style.height = '40px'; // Reset height
+            sendChatBtn.disabled = true; // Disable button while waiting
+            sendChatBtn.textContent = '...';
+
+            const model = chatModelSelect.value;
+            const temperature = parseFloat(chatTempSlider.value);
+
+            // **** VITAL: Secure Backend Call ****
+            // This is where you call your Vercel Serverless Function.
+            // The function should handle the API key securely.
+            try {
+                const response = await fetch('/api/chat', { // Your backend endpoint
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        // Send the recent history for context, adjust as needed for token limits
+                        history: chatHistory.slice(-10), // Send last 10 messages (user + assistant)
+                        message: messageText,
+                        model: model,
+                        temperature: temperature,
+                        // Add other parameters like function calling flags if needed
+                    }),
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error structure' })); // Try to get error detail
+                    throw new Error(`API Error (${response.status}): ${errorData.detail || response.statusText}`);
+                }
+
+                const data = await response.json(); // Expecting { response: "AI message" } from backend
+
+                if (data.response) {
+                    addChatMessage('assistant', data.response);
+                } else {
+                     throw new Error("Received empty response from backend.");
+                }
+
+            } catch (error) {
+                console.error("Chat API call failed:", error);
+                addChatMessage('error', `Error: ${error.message}. Could not get response. Is the backend running?`);
+            } finally {
+                 sendChatBtn.disabled = false; // Re-enable button
+                 sendChatBtn.textContent = 'Send';
             }
         }
 
@@ -645,7 +930,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Set initial theme
             const savedTheme = localStorage.getItem(THEME_KEY) || DEFAULT_THEME;
-            setTheme(savedTheme);
+            setTheme(savedTheme); // setTheme also calls setPrimaryColorRGB
 
             // Load saved login info
             loadLogin();
@@ -653,24 +938,42 @@
             // Load Pastebin buttons
             loadPastebinButtons();
 
+             // Load Chat History
+             loadChatHistory();
+
             // Set initial active tab (e.g., the first one or based on hash)
-            const initialTab = window.location.hash.substring(1) || tabButtons[0]?.dataset.tab || 'class';
+            let initialTab = window.location.hash.substring(1);
+            // Validate initialTab or default
+            const validTabs = Array.from(tabButtons).map(btn => btn.dataset.tab);
+            if (!initialTab || !validTabs.includes(initialTab)) {
+                initialTab = tabButtons[0]?.dataset.tab || 'class';
+            }
             showTab(initialTab);
+
 
             // --- Event Listeners ---
 
             // Tab switching
             tabButtons.forEach(button => {
                 button.addEventListener('click', () => {
-                    const tabId = button.dataset.tab;
-                    showTab(tabId);
-                    // Update URL hash for potential bookmarking/linking
-                    window.location.hash = tabId;
+                    showTab(button.dataset.tab);
                 });
             });
 
             // Theme toggle
             themeToggleButton.addEventListener('click', toggleTheme);
+
+            // Crosshair Follow Mouse Listener
+            document.addEventListener('mousemove', (e) => {
+                if (crosshair) {
+                    crosshair.style.left = `${e.clientX}px`;
+                    crosshair.style.top = `${e.clientY}px`;
+                    if (crosshair.style.opacity !== '1') crosshair.style.opacity = '1';
+                }
+            });
+            document.addEventListener('mouseleave', () => { if (crosshair) crosshair.style.opacity = '0'; });
+            document.addEventListener('mouseenter', () => { if (crosshair) crosshair.style.opacity = '1'; });
+
 
             // Class Tab buttons
             if (saveLoginBtn) saveLoginBtn.addEventListener('click', saveLogin);
@@ -683,25 +986,42 @@
             // Alarm Tab button
             if (playAlarmBtn) playAlarmBtn.addEventListener('click', playRandomAlarm);
 
-             // Listen for messages from iframe (optional)
+            // Chat Tab Listeners
+            if (sendChatBtn) sendChatBtn.addEventListener('click', sendChatMessage);
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) { // Send on Enter, allow Shift+Enter for newline
+                        e.preventDefault(); // Prevent default newline insertion
+                        sendChatMessage();
+                    }
+                });
+                 // Auto-resize textarea
+                 chatInput.addEventListener('input', () => {
+                     chatInput.style.height = 'auto'; // Reset height
+                     chatInput.style.height = `${chatInput.scrollHeight}px`; // Set to scroll height
+                 });
+            }
+             if (chatTempSlider) {
+                 chatTempSlider.addEventListener('input', (e) => {
+                     tempValueSpan.textContent = parseFloat(e.target.value).toFixed(1);
+                 });
+             }
+
+
+             // Listen for messages from Weao iframe (optional)
              window.addEventListener('message', function (event) {
-                 // IMPORTANT: Always verify the origin for security!
-                 if (event.origin !== 'https://weao.xyz') {
-                     // console.log('Message received from unexpected origin:', event.origin);
-                     return;
-                 }
+                 if (event.origin !== 'https://weao.xyz') return;
                  // console.log('Message received from weao.xyz:', event.data);
-                 if (event.data.someWeaoStatus) {
-                     // Handle message from weao
-                 }
+                 // Handle message if needed
              });
 
-             // Send theme initially after iframe might have loaded
+             // Send theme initially after Weao iframe might have loaded
              if (weaoIframe) {
                  weaoIframe.addEventListener('load', () => {
-                     // console.log('Weao iframe loaded, sending theme.');
                      sendThemeToIframe(localStorage.getItem(THEME_KEY) || DEFAULT_THEME);
                  });
+                 // Also send theme immediately in case it's already loaded (e.g., cached)
+                 sendThemeToIframe(localStorage.getItem(THEME_KEY) || DEFAULT_THEME);
              }
         });
 
