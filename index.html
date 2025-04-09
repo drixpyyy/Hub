@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace;
+      background: linear-gradient(135deg, black, #520000);
+      color: white;
+      overflow: hidden;
+    }
+
+    .tabs {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+    }
+
+    .tabs button {
+      margin: 3px;
+      padding: 10px 20px;
+      border: none;
+      background: black;
+      color: white;
+      box-shadow: 0 0 8px red;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .tabs button:hover {
+      box-shadow: 0 0 16px red;
+      transform: scale(1.05);
+    }
+
+    .tab-content {
+      padding: 70px 20px 20px;
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .neon-btn {
+      background: black;
+      border: 2px solid red;
+      color: white;
+      padding: 10px 30px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      box-shadow: 0 0 20px red;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    .crosshair {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      width: 20px;
+      height: 20px;
+      transform: translate(-50%, -50%);
+      border: 2px solid red;
+      box-shadow: 0 0 10px red;
+      pointer-events: none;
+      z-index: 2000;
+    }
+
+    iframe {
+      width: 90vw;
+      height: 80vh;
+      border: 2px solid red;
+      filter: drop-shadow(0 0 10px red);
+    }
+
+    input, button {
+      font-family: monospace;
+    }
+
+    #pastebin-content {
+      white-space: pre-wrap;
+      background: black;
+      padding: 10px;
+      border: 1px solid red;
+      box-shadow: 0 0 10px red;
+    }
+  </style>
+</head>
+<body>
+  <div class="crosshair"></div>
+
+  <div class="tabs">
+    <button onclick="showTab('class')">🎓 Class</button>
+    <button onclick="showTab('pastebin')">📋 Pastebins</button>
+    <button onclick="showTab('weao')">🌐 Weao</button>
+    <button onclick="showTab('alarm')">⏰ Alarm</button>
+    <button onclick="showTab('gaming')">🎮 Gaming</button>
+    <button onclick="toggleTheme()">🌑/🌕 Toggle Theme</button>
+  </div>
+
+  <div id="class" class="tab-content active">
+    <h2>K12 Login (Auto-Fill)</h2>
+    <div id="login-form">
+      <input type="text" id="user" placeholder="Username"/><br><br>
+      <input type="password" id="pass" placeholder="Password"/><br><br>
+      <button class="neon-btn" onclick="saveLogin()">Save</button>
+    </div>
+    <div id="class-buttons" style="display:none;">
+      <h3>Your Classes</h3>
+      <div id="class-list"></div>
+    </div>
+  </div>
+
+  <div id="pastebin" class="tab-content">
+    <h2>Pastebins</h2>
+    <div id="pastebin-list">
+      <button onclick="loadPastebin('https://pastebin.com/raw/XXXXXXX')">Script A</button>
+      <button onclick="loadPastebin('https://pastebin.com/raw/YYYYYYY')">Script B</button>
+    </div>
+    <div id="pastebin-view" style="display:none;">
+      <pre id="pastebin-content"></pre>
+      <button onclick="copyPastebin()">📋 Copy</button>
+      <button onclick="showPastebinList()">🔙 Back</button>
+    </div>
+  </div>
+
+  <div id="weao" class="tab-content">
+    <h2>Weao Mirror</h2>
+    <iframe src="https://weao.xyz" style="background:black;" id="weao-iframe"></iframe>
+  </div>
+
+  <div id="alarm" class="tab-content">
+    <h2>Class Alarm</h2>
+    <button class="neon-btn" onclick="playAlarm()">🔔 Play Random Sound</button>
+    <audio id="alarm-sound1" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3"></audio>
+    <audio id="alarm-sound2" src="https://www.soundjay.com/buttons/sounds/beep-10.mp3"></audio>
+  </div>
+
+  <div id="gaming" class="tab-content">
+    <h2>Xbox Cloud Gaming</h2>
+    <iframe src="https://www.xbox.com/play" style="height:85vh;"></iframe>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll('.tab-content');
+    const weaoIframe = document.getElementById('weao-iframe');
+    const classListContainer = document.getElementById('class-list');
+
+    function showTab(id) {
+      tabs.forEach(t => t.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function saveLogin() {
+      const user = document.getElementById('user').value;
+      const pass = document.getElementById('pass').value;
+      document.cookie = `k12user=${user}; path=/`;
+      document.cookie = `k12pass=${pass}; path=/`;
+      document.getElementById('class-buttons').style.display = 'block';
+      loadClassButtons(); // Load buttons dynamically
+    }
+
+    // Auto-fill login and show class buttons if cookies exist
+    window.onload = () => {
+      const cookies = document.cookie.split(';').reduce((acc, c) => {
+        const [key, val] = c.trim().split('=');
+        acc[key] = val;
+        return acc;
+      }, {});
+      if (cookies.k12user) document.getElementById('user').value = cookies.k12user;
+      if (cookies.k12pass) document.getElementById('pass').value = cookies.k12pass;
+      if (cookies.k12user && cookies.k12pass) {
+        document.getElementById('class-buttons').style.display = 'block';
+        loadClassButtons(); // Load buttons dynamically if auto-filled
+      }
+    };
+
+    // Dynamically load class buttons from a JSON or URL (simulating with static data)
+    function loadClassButtons() {
+      const classes = ['Math', 'Science', 'History', 'English', 'PE']; // Replace with dynamic fetch
+      classListContainer.innerHTML = '';
+      classes.forEach(cls => {
+        const btn = document.createElement('button');
+        btn.textContent = cls;
+        btn.classList.add('neon-btn');
+        classListContainer.appendChild(btn);
+      });
+    }
+
+    // Pastebin code
+    function loadPastebin(url) {
+      fetch(url).then(res => res.text()).then(data => {
+        document.getElementById('pastebin-content').textContent = data;
+        document.getElementById('pastebin-list').style.display = 'none';
+        document.getElementById('pastebin-view').style.display = 'block';
+      });
+    }
+
+    function showPastebinList() {
+      document.getElementById('pastebin-view').style.display = 'none';
+      document.getElementById('pastebin-list').style.display = 'block';
+    }
+
+    function copyPastebin() {
+      const text = document.getElementById('pastebin-content').textContent;
+      navigator.clipboard.writeText(text);
+      alert("Copied!");
+    }
+
+    function playAlarm() {
+      const sounds = [document.getElementById('alarm-sound1'), document.getElementById('alarm-sound2')];
+      const rand = sounds[Math.floor(Math.random() * sounds.length)];
+      rand.play();
+    }
+
+    // Toggle between dark, light, and neon themes
+    function toggleTheme() {
+      if (document.body.style.background === 'linear-gradient(135deg, black, #520000)') {
+        document.body.style.background = 'white';
+        document.body.style.color = 'black';
+        document.querySelectorAll('.tabs button').forEach(b => b.style.background = '#ddd');
+      } else {
+        document.body.style.background = 'linear-gradient(135deg, black, #520000)';
+        document.body.style.color = 'white';
+        document.querySelectorAll('.tabs button').forEach(b => b.style.background = 'black');
+      }
+    }
+
+    // Send theme to iframe (weao.xyz) to mirror it with the same theme
+    function setIframeTheme() {
+      const theme = document.body.style.background.includes('black') ? 'dark' : 'light';
+      weaoIframe.contentWindow.postMessage({ theme }, '*');
+    }
+
+    // Listen for theme change messages from iframe (optional)
+    window.addEventListener('message', function (event) {
+      if (event.data.theme) {
+        console.log(`Weao theme set to: ${event.data.theme}`);
+      }
+    });
+  </script>
+</body>
+</html>
