@@ -66,42 +66,26 @@
         }
 
         body.dark-theme {
-            background: var(--bg-gradient-dark);
-            color: var(--text-color-dark);
-            --primary-color: var(--primary-color-dark);
-            --text-color: var(--text-color-dark);
-            --bg-color: var(--bg-color-dark);
-            --shadow-color: var(--shadow-color-dark);
-            --button-bg: var(--button-bg-dark);
-            --button-text: var(--button-text-dark);
-            --input-bg: var(--input-bg-dark);
-            --input-border: var(--input-border-dark);
-            --sidebar-bg: var(--sidebar-bg-dark);
-            --sidebar-border: var(--sidebar-border-dark);
-            --link-color: var(--link-color-dark);
-            --popup-bg: var(--popup-bg-dark);
-            --popup-border: var(--popup-border-dark);
-            --neon-blur-current: var(--neon-blur);
+            background: var(--bg-gradient-dark); color: var(--text-color-dark);
+            --primary-color: var(--primary-color-dark); --text-color: var(--text-color-dark);
+            --bg-color: var(--bg-color-dark); --shadow-color: var(--shadow-color-dark);
+            --button-bg: var(--button-bg-dark); --button-text: var(--button-text-dark);
+            --input-bg: var(--input-bg-dark); --input-border: var(--input-border-dark);
+            --sidebar-bg: var(--sidebar-bg-dark); --sidebar-border: var(--sidebar-border-dark);
+            --link-color: var(--link-color-dark); --popup-bg: var(--popup-bg-dark);
+            --popup-border: var(--popup-border-dark); --neon-blur-current: var(--neon-blur);
             --neon-blur-hover-current: var(--neon-blur-hover);
         }
 
         body.light-theme {
-            background: var(--bg-gradient-light);
-            color: var(--text-color-light);
-            --primary-color: var(--primary-color-light);
-            --text-color: var(--text-color-light);
-            --bg-color: var(--bg-color-light);
-            --shadow-color: var(--shadow-color-light);
-            --button-bg: var(--button-bg-light);
-            --button-text: var(--button-text-light);
-            --input-bg: var(--input-bg-light);
-            --input-border: var(--input-border-light);
-            --sidebar-bg: var(--sidebar-bg-light);
-            --sidebar-border: var(--sidebar-border-light);
-            --link-color: var(--link-color-light);
-            --popup-bg: var(--popup-bg-light);
-            --popup-border: var(--popup-border-light);
-            --neon-blur-current: 3px;
+            background: var(--bg-gradient-light); color: var(--text-color-light);
+            --primary-color: var(--primary-color-light); --text-color: var(--text-color-light);
+            --bg-color: var(--bg-color-light); --shadow-color: var(--shadow-color-light);
+            --button-bg: var(--button-bg-light); --button-text: var(--button-text-light);
+            --input-bg: var(--input-bg-light); --input-border: var(--input-border-light);
+            --sidebar-bg: var(--sidebar-bg-light); --sidebar-border: var(--sidebar-border-light);
+            --link-color: var(--link-color-light); --popup-bg: var(--popup-bg-light);
+            --popup-border: var(--popup-border-light); --neon-blur-current: 3px;
             --neon-blur-hover-current: 6px;
         }
 
@@ -153,10 +137,8 @@
             z-index: 2100; opacity: 0; transition: opacity 0.1s ease;
         }
         body:hover .crosshair { opacity: 1; }
-        .crosshair::before,
-        .crosshair::after {
-            content: ''; position: absolute;
-            background-color: var(--cursor-color); /* Use variable for color */
+        .crosshair::before, .crosshair::after {
+            content: ''; position: absolute; background-color: var(--cursor-color);
         }
         .crosshair::before { left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%); }
         .crosshair::after { top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%); }
@@ -201,7 +183,15 @@
         #class-list .neon-btn {
             display: block; width: fit-content; min-width: 180px; margin-bottom: 10px;
             margin-left: auto; margin-right: auto; text-align: center; padding-left: 15px; padding-right: 15px;
+            /* Style to indicate alarm toggle state */
+            border-style: solid;
         }
+        #class-list .neon-btn.alarm-active {
+             /* Example: Add a subtle inner glow or change border slightly when active */
+             box-shadow: 0 0 var(--neon-blur-hover-current) var(--shadow-color), inset 0 0 10px rgba(var(--primary-color-rgb, 255, 0, 0), 0.5);
+             border-color: lightgreen; /* Indicate active state */
+        }
+
         .link-btn { margin-top: 15px; display: block; width: fit-content; margin-left:auto; margin-right: auto; }
 
         /* Utility Classes */
@@ -309,21 +299,22 @@
                 Open K12 Schedule Page ↗️
             </a>
             <div id="class-buttons" style="margin-top: 20px;">
-                <h3>Class Quick Links (Example)</h3>
+                <h3>Class Quick Links (Toggle Alarm)</h3>
                 <div id="class-list">
-                    <!-- Simplified Class Buttons -->
-                    <button class="neon-btn" onclick="showFeedback('Clicked 9:50 Math (add link?)')">
+                    <!-- Simplified Class Buttons - REMOVED onclick -->
+                    <button class="neon-btn class-alarm-toggle">
                         9:50 - 7th Math
                     </button>
-                    <button class="neon-btn" onclick="showFeedback('Clicked 10:45 Science (add link?)')">
+                    <button class="neon-btn class-alarm-toggle">
                         10:45 - 7th Science
                     </button>
-                    <button class="neon-btn" onclick="showFeedback('Clicked 12:30 ELA (add link?)')">
+                    <button class="neon-btn class-alarm-toggle">
                         12:30 - 7th ELA
                     </button>
+                    <!-- Add more if needed, ensure they have class="neon-btn class-alarm-toggle" -->
                 </div>
                  <span class="small-text">
-                    Add actual URLs to button clicks if available.
+                    Clicking a class toggles the Random Alarm feature ON/OFF.
                  </span>
             </div>
         </section>
@@ -353,6 +344,7 @@
 
         <section id="alarm" class="tab-content">
             <h2>Class Alarm</h2>
+            <!-- Text content will be updated by JS -->
             <button class="neon-btn" id="play-alarm-btn" style="display: block; margin-left: auto; margin-right: auto;">🔔 Play Random Sound</button>
             <audio id="alarm-sound1" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" preload="auto"></audio>
             <audio id="alarm-sound2" src="https://www.soundjay.com/buttons/sounds/beep-10.mp3" preload="auto"></audio>
@@ -401,6 +393,9 @@
             // { name: 'My Script Name', url: 'https://pastebin.com/raw/YOUR_ID' }
         ];
 
+        // --- State Variables ---
+        let isAlarmFeatureEnabled = false; // State for the alarm toggle
+
         // --- DOM Elements ---
         const tabButtons = document.querySelectorAll('.tab-button');
         const tabContents = document.querySelectorAll('.tab-content');
@@ -426,6 +421,7 @@
         const popupTitle = document.getElementById('reddit-popup-title');
         const popupBody = document.getElementById('reddit-popup-body');
         const popupOriginalLink = document.getElementById('reddit-popup-original-link');
+        const classAlarmToggleButtons = document.querySelectorAll('.class-alarm-toggle'); // Select class buttons
 
         // --- Functions ---
 
@@ -526,14 +522,50 @@
              if (listContainer) listContainer.classList.remove('hidden');
         }
 
-        /** Plays a random alarm sound from the list. */
+        /** Updates the UI elements related to the alarm state */
+        function updateAlarmUI() {
+            if (playAlarmBtn) {
+                playAlarmBtn.textContent = `🔔 Play Random Sound ${isAlarmFeatureEnabled ? '(Enabled)' : '(Disabled)'}`;
+            }
+            // Add/remove class from toggle buttons to show state
+            classAlarmToggleButtons.forEach(button => {
+                if (isAlarmFeatureEnabled) {
+                    button.classList.add('alarm-active');
+                } else {
+                    button.classList.remove('alarm-active');
+                }
+            });
+        }
+
+        /** Toggles the alarm feature state */
+        function toggleAlarmFeature() {
+            isAlarmFeatureEnabled = !isAlarmFeatureEnabled; // Toggle the state
+            updateAlarmUI(); // Update the button text and styles
+            showFeedback(`Random Alarm feature ${isAlarmFeatureEnabled ? 'ENABLED' : 'DISABLED'}.`);
+        }
+
+        /** Plays a random alarm sound IF the feature is enabled */
         function playRandomAlarm() {
+            if (!isAlarmFeatureEnabled) {
+                showFeedback("Alarm feature is currently disabled.", "error");
+                return; // Don't play if disabled
+            }
+
             if (alarmSounds.length > 0) {
                 alarmSounds.forEach(sound => { if(sound) sound.pause(); });
                 const sound = alarmSounds[Math.floor(Math.random() * alarmSounds.length)];
-                if(sound) { sound.currentTime = 0; sound.play().catch(e => console.error("Audio failed:", e)); }
+                if(sound) {
+                    sound.currentTime = 0;
+                    sound.play().catch(e => {
+                        console.error("Audio play failed:", e);
+                        showFeedback("Could not play sound.", "error");
+                    });
+                }
+            } else {
+                showFeedback("No alarm sounds available.", "error");
             }
         }
+
 
         /** Shows a temporary feedback message. */
         let feedbackTimeout;
@@ -625,66 +657,19 @@
         function showRedditPopup(post) {
             if(!popupOverlay || !popupTitle || !popupBody || !popupOriginalLink || !post) return; // Check elements exist
 
-            // Set Title
             popupTitle.textContent = decodeHtmlEntities(post.title);
-
-            // Set Body Content
             popupBody.innerHTML = ''; // Clear previous content
             const postHint = post.post_hint;
             const url = post.url_overridden_by_dest || post.url;
 
-            // 1. Selftext (HTML version if available)
-             if (post.selftext_html) {
-                 const decodedHtml = decodeHtmlEntities(post.selftext_html);
-                 popupBody.innerHTML = decodedHtml; // CAUTION: XSS risk
-            }
-            // 2. Image hint or URL ends with image extension
-            else if (postHint === 'image' || /\.(jpg|jpeg|png|gif)$/i.test(url)) {
-                const img = document.createElement('img');
-                img.src = url;
-                img.alt = decodeHtmlEntities(post.title);
-                popupBody.appendChild(img);
-            }
-             // 3. Hosted Video hint (Reddit videos, streamable etc)
-             else if (postHint === 'hosted:video' && post.media?.reddit_video?.fallback_url) {
-                 const video = document.createElement('video');
-                 video.src = post.media.reddit_video.fallback_url;
-                 video.controls = true;
-                 video.muted = true; // Often required for autoplay/programmatic play
-                 popupBody.appendChild(video);
-             }
-            // 4. Rich Video hint (Youtube, etc) - Use oembed HTML
-             else if (postHint === 'rich:video' && post.media?.oembed?.html) {
-                 const embedHtml = decodeHtmlEntities(post.media.oembed.html);
-                 // Create a temporary div to parse the HTML string
-                 const tempDiv = document.createElement('div');
-                 tempDiv.innerHTML = embedHtml;
-                 // Append the parsed elements (usually an iframe)
-                 while (tempDiv.firstChild) {
-                    popupBody.appendChild(tempDiv.firstChild);
-                 }
-             }
-            // 5. Link hint or just a URL different from permalink
-            else if (postHint === 'link' || (url && url !== `https://www.reddit.com${post.permalink}`)) {
-                const linkPara = document.createElement('p');
-                linkPara.textContent = "This post links to: ";
-                const link = document.createElement('a');
-                link.href = url;
-                link.target = '_blank';
-                link.rel = 'noopener noreferrer';
-                link.textContent = url;
-                linkPara.appendChild(link);
-                popupBody.appendChild(linkPara);
-            }
-            // Fallback for other types or text-only with no selftext
-            else {
-                popupBody.innerHTML = '<p><i>No text content or preview available. View original post for details.</i></p>';
-            }
+             if (post.selftext_html) { popupBody.innerHTML = decodeHtmlEntities(post.selftext_html); } // CAUTION: XSS risk
+            else if (postHint === 'image' || /\.(jpg|jpeg|png|gif)$/i.test(url)) { const img = document.createElement('img'); img.src = url; img.alt = decodeHtmlEntities(post.title); popupBody.appendChild(img); }
+            else if (postHint === 'hosted:video' && post.media?.reddit_video?.fallback_url) { const video = document.createElement('video'); video.src = post.media.reddit_video.fallback_url; video.controls = true; video.muted = true; popupBody.appendChild(video); }
+            else if (postHint === 'rich:video' && post.media?.oembed?.html) { const embedHtml = decodeHtmlEntities(post.media.oembed.html); const tempDiv = document.createElement('div'); tempDiv.innerHTML = embedHtml; while (tempDiv.firstChild) { popupBody.appendChild(tempDiv.firstChild); } }
+            else if (postHint === 'link' || (url && url !== `https://www.reddit.com${post.permalink}`)) { const linkPara = document.createElement('p'); linkPara.textContent = "Links to: "; const link = document.createElement('a'); link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = url; linkPara.appendChild(link); popupBody.appendChild(linkPara); }
+            else { popupBody.innerHTML = '<p><i>No text content or preview available. View original post for details.</i></p>'; }
 
-            // Set Original Post Link
             popupOriginalLink.href = `https://www.reddit.com${post.permalink}`;
-
-            // Show Popup
             popupOverlay.classList.add('active');
         }
 
@@ -693,7 +678,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Set initial theme
             const savedTheme = localStorage.getItem(THEME_KEY) || DEFAULT_THEME;
-            setTheme(savedTheme); // Calls sub-functions
+            setTheme(savedTheme);
 
             // Load Pastebin buttons
             loadPastebinButtons();
@@ -701,11 +686,14 @@
             // Load initial Reddit posts
             fetchRedditPosts();
 
-            // Set initial active tab from hash or default
+            // Set initial active tab
             let initialTab = ''; try { initialTab = window.location.hash.substring(1); } catch(e) {}
             const validTabs = Array.from(tabButtons).map(btn => btn.dataset.tab);
             if (!initialTab || !validTabs.includes(initialTab)) initialTab = tabButtons[0]?.dataset.tab || 'class';
             showTab(initialTab);
+
+            // Set initial Alarm UI state
+            updateAlarmUI();
 
             // --- Event Listeners ---
             tabButtons.forEach(button => { button.addEventListener('click', () => showTab(button.dataset.tab)); });
@@ -722,7 +710,14 @@
             // Pastebin Tab buttons
             if (copyPastebinBtn) copyPastebinBtn.addEventListener('click', copyPastebinContent);
             if (backToPastebinListBtn) backToPastebinListBtn.addEventListener('click', showPastebinListView);
+
+            // Alarm Tab button - Now checks the toggle state
             if (playAlarmBtn) playAlarmBtn.addEventListener('click', playRandomAlarm);
+
+            // Class Buttons - Add listeners to toggle alarm feature
+            classAlarmToggleButtons.forEach(button => {
+                button.addEventListener('click', toggleAlarmFeature);
+            });
 
             // Reddit Search Listeners
             if (redditSearchBtn && redditSearchInput) {
