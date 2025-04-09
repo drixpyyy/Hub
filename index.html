@@ -7,55 +7,83 @@
   <style>
     body {
       margin: 0;
-      font-family: monospace;
-      background: linear-gradient(135deg, black, #520000);
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #111, #3b0a45);
       color: white;
       overflow: hidden;
+      transition: background 0.3s ease-in-out;
     }
 
     .tabs {
       position: fixed;
-      top: 10px;
-      left: 10px;
+      top: 20px;
+      left: 20px;
       z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .tabs button {
-      margin: 3px;
-      padding: 10px 20px;
-      border: none;
-      background: black;
+      padding: 12px 20px;
+      background: #2a2a2a;
       color: white;
-      box-shadow: 0 0 8px red;
+      font-size: 1.1em;
+      border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: 0.2s;
+      transition: 0.2s ease;
+      box-shadow: 0 0 12px rgba(255, 0, 0, 0.8);
     }
 
     .tabs button:hover {
-      box-shadow: 0 0 16px red;
+      box-shadow: 0 0 20px rgba(255, 0, 0, 1);
       transform: scale(1.05);
     }
 
     .tab-content {
-      padding: 70px 20px 20px;
+      padding: 80px 20px;
       display: none;
+      transition: opacity 0.3s ease;
     }
 
     .tab-content.active {
       display: block;
+      opacity: 1;
     }
 
     .neon-btn {
       background: black;
       border: 2px solid red;
       color: white;
-      padding: 10px 30px;
-      font-size: 1.2em;
+      padding: 12px 30px;
+      font-size: 1.1em;
       border-radius: 10px;
       box-shadow: 0 0 20px red;
       cursor: pointer;
-      margin: 5px;
+      margin: 8px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .neon-btn:hover {
+      box-shadow: 0 0 30px red;
+      transform: scale(1.1);
+    }
+
+    input, button {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+      border-radius: 8px;
+      border: 2px solid #555;
+      background: #111;
+      color: white;
+      margin-bottom: 10px;
+      width: 80%;
+    }
+
+    input:focus, button:focus {
+      border-color: red;
+      outline: none;
     }
 
     .crosshair {
@@ -78,16 +106,44 @@
       filter: drop-shadow(0 0 10px red);
     }
 
-    input, button {
-      font-family: monospace;
+    #pastebin-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 70vh;
+      overflow-y: auto;
+      transition: all 0.3s ease;
     }
 
-    #pastebin-content {
-      white-space: pre-wrap;
-      background: black;
+    .pastebin-item {
       padding: 10px;
-      border: 1px solid red;
-      box-shadow: 0 0 10px red;
+      background: #222;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    .pastebin-item:hover {
+      background: #ff0000;
+      transform: scale(1.05);
+    }
+
+    .pastebin-view {
+      background: #111;
+      padding: 20px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      max-width: 90%;
+      margin: auto;
+    }
+
+    #gaming-iframe {
+      height: 85vh;
+      width: 100%;
+      border: none;
     }
   </style>
 </head>
@@ -99,15 +155,15 @@
     <button onclick="showTab('pastebin')">📋 Pastebins</button>
     <button onclick="showTab('weao')">🌐 Weao</button>
     <button onclick="showTab('alarm')">⏰ Alarm</button>
-    <button onclick="showTab('gaming')">🎮 Gaming</button>
+    <button onclick="showTab('gaming')">🎮 Xbox Cloud Gaming</button>
     <button onclick="toggleTheme()">🌑/🌕 Toggle Theme</button>
   </div>
 
   <div id="class" class="tab-content active">
     <h2>K12 Login (Auto-Fill)</h2>
     <div id="login-form">
-      <input type="text" id="user" placeholder="Username"/><br><br>
-      <input type="password" id="pass" placeholder="Password"/><br><br>
+      <input type="text" id="user" placeholder="Username" /><br />
+      <input type="password" id="pass" placeholder="Password" /><br />
       <button class="neon-btn" onclick="saveLogin()">Save</button>
     </div>
     <div id="class-buttons" style="display:none;">
@@ -119,11 +175,11 @@
   <div id="pastebin" class="tab-content">
     <h2>Pastebins</h2>
     <div id="pastebin-list">
-      <button onclick="loadPastebin('https://pastebin.com/raw/XXXXXXX')">Script A</button>
-      <button onclick="loadPastebin('https://pastebin.com/raw/YYYYYYY')">Script B</button>
+      <div class="pastebin-item" onclick="loadPastebin('https://pastebin.com/raw/XXXXXXX')">Script A</div>
+      <div class="pastebin-item" onclick="loadPastebin('https://pastebin.com/raw/YYYYYYY')">Script B</div>
     </div>
     <div id="pastebin-view" style="display:none;">
-      <pre id="pastebin-content"></pre>
+      <div class="pastebin-view" id="pastebin-content"></div>
       <button onclick="copyPastebin()">📋 Copy</button>
       <button onclick="showPastebinList()">🔙 Back</button>
     </div>
@@ -143,7 +199,7 @@
 
   <div id="gaming" class="tab-content">
     <h2>Xbox Cloud Gaming</h2>
-    <iframe src="https://www.xbox.com/play" style="height:85vh;"></iframe>
+    <iframe src="https://www.xbox.com/en-US/play/launch/fortnite/BT5P2X999VH2" id="gaming-iframe"></iframe>
   </div>
 
   <script>
@@ -220,29 +276,16 @@
 
     // Toggle between dark, light, and neon themes
     function toggleTheme() {
-      if (document.body.style.background === 'linear-gradient(135deg, black, #520000)') {
+      if (document.body.style.background === 'linear-gradient(135deg, #111, #3b0a45)') {
         document.body.style.background = 'white';
         document.body.style.color = 'black';
         document.querySelectorAll('.tabs button').forEach(b => b.style.background = '#ddd');
       } else {
-        document.body.style.background = 'linear-gradient(135deg, black, #520000)';
+        document.body.style.background = 'linear-gradient(135deg, #111, #3b0a45)';
         document.body.style.color = 'white';
         document.querySelectorAll('.tabs button').forEach(b => b.style.background = 'black');
       }
     }
-
-    // Send theme to iframe (weao.xyz) to mirror it with the same theme
-    function setIframeTheme() {
-      const theme = document.body.style.background.includes('black') ? 'dark' : 'light';
-      weaoIframe.contentWindow.postMessage({ theme }, '*');
-    }
-
-    // Listen for theme change messages from iframe (optional)
-    window.addEventListener('message', function (event) {
-      if (event.data.theme) {
-        console.log(`Weao theme set to: ${event.data.theme}`);
-      }
-    });
   </script>
 </body>
 </html>
