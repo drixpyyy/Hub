@@ -23,7 +23,8 @@
             --sidebar-border-light: #dee2e6; --link-color-light: #0056b3; --popup-bg-light: #ffffff;
             --popup-border-light: var(--primary-color-light);
 
-            --cursor-color: darkgreen; --transition-speed: 0.3s; --neon-blur: 8px;
+            /* --cursor-color: darkgreen; -- Removed, using black/white now */
+            --transition-speed: 0.3s; --neon-blur: 8px;
             --neon-blur-hover: 16px; --sidebar-width: 280px;
         }
 
@@ -51,17 +52,14 @@
             --popup-border: var(--popup-border-light); --neon-blur-current: 3px; --neon-blur-hover-current: 6px;
         }
 
+        /* Hide real cursor over interactive elements */
+        a:hover, button:hover, input:hover, textarea:hover, select:hover {
+            cursor: none !important;
+        }
+
         /* Tab Navigation */
-        .tabs {
-            position: fixed; top: 15px; left: 15px; z-index: 1000; display: flex; flex-wrap: wrap; gap: 8px;
-            background-color: rgba(0, 0, 0, 0.3); padding: 5px; border-radius: 10px; max-width: calc(100% - var(--sidebar-width) - 40px);
-        }
-        .tab-button {
-            padding: 10px 18px; border: 1px solid transparent; background: var(--button-bg); color: var(--button-text);
-            box-shadow: 0 0 var(--neon-blur-current) var(--shadow-color); border-radius: 8px; cursor: pointer;
-            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
-            font-family: inherit; font-size: 0.9em;
-        }
+        .tabs { position: fixed; top: 15px; left: 15px; z-index: 1000; display: flex; flex-wrap: wrap; gap: 8px; background-color: rgba(0, 0, 0, 0.3); padding: 5px; border-radius: 10px; max-width: calc(100% - var(--sidebar-width) - 40px); }
+        .tab-button { padding: 10px 18px; border: 1px solid transparent; background: var(--button-bg); color: var(--button-text); box-shadow: 0 0 var(--neon-blur-current) var(--shadow-color); border-radius: 8px; /* cursor: pointer; */ transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease; font-family: inherit; font-size: 0.9em; }
         .tab-button:hover, .tab-button.active { box-shadow: 0 0 var(--neon-blur-hover-current) var(--shadow-color); transform: translateY(-2px) scale(1.03); border-color: var(--primary-color); }
         .tab-button.active { background-color: var(--primary-color); color: var(--bg-color); font-weight: bold; }
 
@@ -72,23 +70,26 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* General Button Styling (Neon) */
-        .neon-btn {
-            background: var(--button-bg); border: 2px solid var(--primary-color); color: var(--button-text);
-            padding: 12px 25px; font-size: 1.0em; border-radius: 10px;
-            box-shadow: 0 0 var(--neon-blur-current) var(--shadow-color), inset 0 0 5px rgba(var(--primary-color-rgb, 255, 0, 0), 0.3);
-            cursor: pointer; margin: 8px 5px;
-            transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, background-color var(--transition-speed) ease, color var(--transition-speed) ease;
-            font-family: inherit; text-decoration: none; display: inline-block; vertical-align: middle;
-        }
+        .neon-btn { background: var(--button-bg); border: 2px solid var(--primary-color); color: var(--button-text); padding: 12px 25px; font-size: 1.0em; border-radius: 10px; box-shadow: 0 0 var(--neon-blur-current) var(--shadow-color), inset 0 0 5px rgba(var(--primary-color-rgb, 255, 0, 0), 0.3); /* cursor: pointer; */ margin: 8px 5px; transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease, background-color var(--transition-speed) ease, color var(--transition-speed) ease; font-family: inherit; text-decoration: none; display: inline-block; vertical-align: middle; }
         .neon-btn:hover { box-shadow: 0 0 var(--neon-blur-hover-current) var(--shadow-color), inset 0 0 10px rgba(var(--primary-color-rgb, 255, 0, 0), 0.5); transform: scale(1.05); background-color: var(--primary-color); color: var(--bg-color); }
         .neon-btn:active { transform: scale(0.98); }
 
-        /* Custom Cursor (Dark Green) */
-        .crosshair { position: fixed; width: 18px; height: 18px; transform: translate(-50%, -50%); pointer-events: none; z-index: 2100; opacity: 0; transition: opacity 0.1s ease; }
+        /* Custom Cursor (Black with White Outline, Bigger) */
+        .crosshair {
+            position: fixed;
+            width: 28px; /* Increased size */
+            height: 28px; /* Increased size */
+            transform: translate(-50%, -50%); pointer-events: none;
+            z-index: 2100; opacity: 0; transition: opacity 0.1s ease;
+        }
         body:hover .crosshair { opacity: 1; }
-        .crosshair::before, .crosshair::after { content: ''; position: absolute; background-color: var(--cursor-color); }
-        .crosshair::before { left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%); }
-        .crosshair::after { top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%); }
+        .crosshair::before, .crosshair::after {
+            content: ''; position: absolute; background-color: black;
+            /* White outline using box-shadow */
+            box-shadow: 0 0 0 1px white; /* Adjust 1px for outline thickness */
+        }
+        .crosshair::before { left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%); } /* Line thickness */
+        .crosshair::after { top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%); } /* Line thickness */
 
         /* Iframe Styling */
         iframe { width: calc(100% - 4px); height: 70vh; border: 2px solid var(--primary-color); filter: drop-shadow(0 0 10px var(--shadow-color)); transition: border-color var(--transition-speed) ease, filter var(--transition-speed) ease; background-color: var(--bg-color); margin-top: 10px; }
@@ -104,10 +105,7 @@
         #pastebin-view { display: none; }
 
         /* Class List Specific */
-        #class-list .neon-btn { /* Renamed class for clarity */
-            display: block; width: fit-content; min-width: 180px; margin-bottom: 10px;
-            margin-left: auto; margin-right: auto; text-align: center; padding-left: 15px; padding-right: 15px;
-        }
+        #class-list .neon-btn { display: block; width: fit-content; min-width: 180px; margin-bottom: 10px; margin-left: auto; margin-right: auto; text-align: center; padding-left: 15px; padding-right: 15px; }
         .link-btn { margin-top: 15px; display: block; width: fit-content; margin-left:auto; margin-right: auto; }
 
         /* Utility Classes */
@@ -127,12 +125,12 @@
         #reddit-sidebar h3 { padding: 15px; margin: 0; border-bottom: 1px solid var(--sidebar-border); font-size: 1.1em; text-align: center; flex-shrink: 0; color: var(--primary-color); width: auto; margin-left: 0; margin-right: 0; display: block; }
         #reddit-search-area { padding: 10px 15px; border-bottom: 1px solid var(--sidebar-border); display: flex; gap: 5px; flex-shrink: 0; }
         #reddit-search-input { margin-bottom: 0; flex-grow: 1; }
-        #reddit-search-btn { margin: 0; padding: 8px 12px; font-size: 0.9em; height: auto; flex-shrink: 0; cursor: pointer; }
+        #reddit-search-btn { margin: 0; padding: 8px 12px; font-size: 0.9em; height: auto; flex-shrink: 0; /* cursor: pointer; */ }
         #reddit-posts { flex-grow: 1; overflow-y: auto; padding: 15px; }
         .reddit-post { border-bottom: 1px solid var(--sidebar-border); padding: 10px 0; margin-bottom: 10px; }
         .reddit-post:last-child { border-bottom: none; margin-bottom: 0; }
         .reddit-post-title { font-size: 0.95em; font-weight: bold; margin-bottom: 5px; }
-        .reddit-post-title span { color: var(--link-color); text-decoration: none; cursor: pointer; }
+        .reddit-post-title span { color: var(--link-color); text-decoration: none; /* cursor: pointer; */ }
         .reddit-post-title span:hover { text-decoration: underline; }
         .reddit-post-meta { font-size: 0.8em; opacity: 0.8; }
         #reddit-status { padding: 15px; text-align: center; font-style: italic; opacity: 0.7; }
@@ -142,12 +140,12 @@
         .popup-overlay.active { opacity: 1; pointer-events: auto; }
         .popup-content { background-color: var(--popup-bg); padding: 25px; border-radius: 10px; max-width: 80vw; max-height: 85vh; overflow-y: auto; position: relative; border: 2px solid var(--popup-border); box-shadow: 0 5px 25px rgba(0,0,0,0.4); transform: scale(0.9); transition: transform 0.3s ease, background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
         .popup-overlay.active .popup-content { transform: scale(1.0); }
-        .popup-close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.8em; font-weight: bold; color: var(--text-color); background: none; border: none; cursor: pointer; line-height: 1; opacity: 0.7; transition: opacity 0.2s ease; }
+        .popup-close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.8em; font-weight: bold; color: var(--text-color); background: none; border: none; /* cursor: pointer; */ line-height: 1; opacity: 0.7; transition: opacity 0.2s ease; }
         .popup-close-btn:hover { opacity: 1; }
         .popup-title { font-size: 1.3em; font-weight: bold; margin-bottom: 15px; color: var(--primary-color); border-bottom: 1px solid var(--popup-border); padding-bottom: 10px; }
         .popup-body { margin-bottom: 20px; }
         .popup-body p { line-height: 1.5; margin-bottom: 1em; }
-        .popup-body a { color: var(--link-color); text-decoration: underline; cursor: pointer; }
+        .popup-body a { color: var(--link-color); text-decoration: underline; /* cursor: pointer; */ }
         .popup-body img, .popup-body video { max-width: 100%; height: auto; display: block; margin: 10px auto; border-radius: 5px; }
         .popup-body iframe { max-width: 100%; }
         .popup-link-original { font-size: 0.9em; display: block; margin-top: 15px; opacity: 0.8; }
@@ -189,10 +187,9 @@
                     <button class="neon-btn class-play-sound">
                         12:30 - 7th ELA
                     </button>
-                    <!-- Add more if needed, ensure they have class="neon-btn class-play-sound" -->
                 </div>
                  <span class="small-text">
-                    Clicking a class plays a random sound.
+                    Clicking a class plays a sound.
                  </span>
             </div>
         </section>
@@ -255,10 +252,12 @@
     <!-- Feedback Message Area -->
     <div id="feedback" class="feedback-message"></div>
 
-    <!-- Hidden Audio Elements for Class Sounds -->
-    <audio id="class-sound1" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3" preload="auto"></audio>
-    <audio id="class-sound2" src="https://www.soundjay.com/buttons/sounds/beep-10.mp3" preload="auto"></audio>
-    <!-- Add more <audio> elements here if you want more sounds -->
+    <!-- Hidden Audio Element for Class Sound -->
+    <!-- Find a suitable buzzer/alarm sound URL -->
+    <audio id="class-buzzer-sound" src="https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3" preload="auto"></audio>
+    <!-- Example: https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3 -->
+    <!-- Example: https://cdn.freesound.org/previews/518/518794_1648170-lq.mp3 (might need conversion/check license) -->
+
 
     <script>
         // --- Configuration ---
@@ -269,9 +268,6 @@
             { name: 'Example Script 2', url: 'https://pastebin.com/raw/gZDbqP4G' },
             // { name: 'My Script Name', url: 'https://pastebin.com/raw/YOUR_ID' }
         ];
-
-        // --- State Variables ---
-        // isAlarmFeatureEnabled removed
 
         // --- DOM Elements ---
         const tabButtons = document.querySelectorAll('.tab-button');
@@ -286,8 +282,7 @@
         const pastebinLoadingDiv = document.getElementById('pastebin-loading');
         const copyPastebinBtn = document.getElementById('copy-pastebin-btn');
         const backToPastebinListBtn = document.getElementById('back-to-pastebin-list-btn');
-        // playAlarmBtn removed
-        const classSounds = [ document.getElementById('class-sound1'), document.getElementById('class-sound2') ]; // Renamed
+        const classBuzzerSound = document.getElementById('class-buzzer-sound'); // Single sound element
         const weaoIframe = document.getElementById('weao-iframe');
         const redditPostsDiv = document.getElementById('reddit-posts');
         const redditSearchInput = document.getElementById('reddit-search-input');
@@ -298,175 +293,66 @@
         const popupTitle = document.getElementById('reddit-popup-title');
         const popupBody = document.getElementById('reddit-popup-body');
         const popupOriginalLink = document.getElementById('reddit-popup-original-link');
-        const classPlaySoundButtons = document.querySelectorAll('.class-play-sound'); // Select class buttons
+        const classPlaySoundButtons = document.querySelectorAll('.class-play-sound');
 
         // --- Functions ---
 
-        /** Shows a specific tab and hides others. */
         function showTab(tabId) {
-            tabContents.forEach(content => content.classList.remove('active'));
-            tabButtons.forEach(button => button.classList.remove('active'));
-            const activeContent = document.getElementById(tabId);
-            const activeButton = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
-            if (activeContent) activeContent.classList.add('active');
-            if (activeButton) activeButton.classList.add('active');
+            tabContents.forEach(c => c.classList.remove('active')); tabButtons.forEach(b => b.classList.remove('active'));
+            const aC = document.getElementById(tabId); const aB = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
+            if(aC) aC.classList.add('active'); if(aB) aB.classList.add('active');
             try { window.location.hash = tabId; } catch(e) {}
         }
-
-        /** Sets the theme on the body and saves preference. */
         function setTheme(themeName) {
             body.className = ''; body.classList.add(themeName); localStorage.setItem(THEME_KEY, themeName);
             updateThemeToggleButton(themeName); setPrimaryColorRGB(themeName); sendThemeToIframe(themeName);
         }
-
-        /** Helper to set RGB version of primary color for effects like inset shadow */
         function setPrimaryColorRGB(themeName) {
-            try {
-                const style = getComputedStyle(document.documentElement);
-                const primaryColorHex = style.getPropertyValue(themeName === 'dark-theme' ? '--primary-color-dark' : '--primary-color-light').trim();
-                let r = 0, g = 0, b = 0;
-                if (primaryColorHex.startsWith('#')) {
-                    const hex = primaryColorHex.substring(1);
-                    if (hex.length === 6) { r = parseInt(hex.substring(0, 2), 16); g = parseInt(hex.substring(2, 4), 16); b = parseInt(hex.substring(4, 6), 16); }
-                    else if (hex.length === 3) { r = parseInt(hex[0] + hex[0], 16); g = parseInt(hex[1] + hex[1], 16); b = parseInt(hex[2] + hex[2], 16); }
-                }
-                document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
-            } catch (e) { console.error("Error setting primary color RGB:", e); document.documentElement.style.setProperty('--primary-color-rgb', `255, 0, 0`); }
+            try { const s=getComputedStyle(document.documentElement),pCH=s.getPropertyValue(themeName==='dark-theme'?'--primary-color-dark':'--primary-color-light').trim();let r=0,g=0,b=0;if(pCH.startsWith('#')){const h=pCH.substring(1);if(h.length===6){r=parseInt(h.substring(0,2),16);g=parseInt(h.substring(2,4),16);b=parseInt(h.substring(4,6),16);}else if(h.length===3){r=parseInt(h[0]+h[0],16);g=parseInt(h[1]+h[1],16);b=parseInt(h[2]+h[2],16);}} document.documentElement.style.setProperty('--primary-color-rgb',`${r},${g},${b}`);}
+            catch(e){document.documentElement.style.setProperty('--primary-color-rgb',`255,0,0`);}
         }
+        function toggleTheme() { const cT=localStorage.getItem(THEME_KEY)||DEFAULT_THEME; setTheme(cT==='dark-theme'?'light-theme':'dark-theme'); }
+        function updateThemeToggleButton(tN){ if(themeToggleButton) themeToggleButton.textContent = tN==='dark-theme'?'☀️ Light':'🌙 Dark'; }
+        function loadPastebinButtons(){ if(!pastebinListDiv)return;pastebinListDiv.innerHTML=''; if(PASTEBIN_LINKS.length===0){pastebinListDiv.innerHTML='<p>No links.</p>';return;} PASTEBIN_LINKS.forEach(p=>{const b=document.createElement('button');b.textContent=p.name;b.classList.add('neon-btn');b.addEventListener('click',()=>loadPastebinContent(p.url));pastebinListDiv.appendChild(b);}); }
+        async function loadPastebinContent(url){ const lC=document.getElementById('pastebin-list-container');if(lC)lC.classList.add('hidden');if(pastebinViewDiv)pastebinViewDiv.classList.remove('hidden'); if(pastebinContentPre)pastebinContentPre.textContent='';if(pastebinLoadingDiv)pastebinLoadingDiv.classList.remove('hidden'); try{const r=await fetch(url);if(!r.ok)throw new Error(`HTTP ${r.status}`);const d=await r.text();if(pastebinContentPre)pastebinContentPre.textContent=d;} catch(e){if(pastebinContentPre)pastebinContentPre.textContent=`Error: ${e.message}`;showFeedback(`Load fail: ${e.message}`,"error");} finally{if(pastebinLoadingDiv)pastebinLoadingDiv.classList.add('hidden');}}
+        function copyPastebinContent(){ const t=pastebinContentPre?.textContent;if(navigator.clipboard&&t){navigator.clipboard.writeText(t).then(()=>showFeedback("Copied!")).catch(()=>showFeedback("Copy failed.","error"));}else if(t){showFeedback("Clipboard fail.","error");}else{showFeedback("Nothing copy.","error");}}
+        function showPastebinListView(){ if(pastebinViewDiv)pastebinViewDiv.classList.add('hidden'); const lC=document.getElementById('pastebin-list-container');if(lC)lC.classList.remove('hidden');}
 
-        /** Toggles between dark and light themes. */
-        function toggleTheme() {
-            const currentTheme = localStorage.getItem(THEME_KEY) || DEFAULT_THEME;
-            const newTheme = currentTheme === 'dark-theme' ? 'light-theme' : 'dark-theme';
-            setTheme(newTheme);
-        }
-
-        /** Updates the theme toggle button text/icon. */
-        function updateThemeToggleButton(themeName) {
-            if(themeToggleButton) themeToggleButton.textContent = themeName === 'dark-theme' ? '☀️ Light' : '🌙 Dark';
-        }
-
-        /** Populates the list of Pastebin buttons. */
-        function loadPastebinButtons() {
-            if (!pastebinListDiv) return; pastebinListDiv.innerHTML = '';
-            if (PASTEBIN_LINKS.length === 0) { pastebinListDiv.innerHTML = '<p>No Pastebin links configured.</p>'; return; }
-            PASTEBIN_LINKS.forEach(paste => {
-                const btn = document.createElement('button'); btn.textContent = paste.name; btn.classList.add('neon-btn');
-                btn.addEventListener('click', () => loadPastebinContent(paste.url)); pastebinListDiv.appendChild(btn);
-            });
-        }
-
-        /** Fetches and displays content from a Pastebin raw URL. */
-        async function loadPastebinContent(url) {
-            const listContainer = document.getElementById('pastebin-list-container'); if (listContainer) listContainer.classList.add('hidden');
-            if(pastebinViewDiv) pastebinViewDiv.classList.remove('hidden'); if(pastebinContentPre) pastebinContentPre.textContent = '';
-            if(pastebinLoadingDiv) pastebinLoadingDiv.classList.remove('hidden');
-            try { const response = await fetch(url); if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`); const data = await response.text(); if(pastebinContentPre) pastebinContentPre.textContent = data; }
-            catch (error) { console.error("Failed load Pastebin:", error); if(pastebinContentPre) pastebinContentPre.textContent = `Error: ${error.message}`; showFeedback(`Failed load pastebin: ${error.message}`, "error"); }
-            finally { if(pastebinLoadingDiv) pastebinLoadingDiv.classList.add('hidden'); }
-        }
-
-        /** Copies the displayed Pastebin content to the clipboard. */
-        function copyPastebinContent() {
-            const text = pastebinContentPre?.textContent; if (navigator.clipboard && text) { navigator.clipboard.writeText(text) .then(() => showFeedback("Copied!")) .catch(err => showFeedback("Copy failed.", "error")); } else if (text) { showFeedback("Clipboard API not available.", "error"); } else { showFeedback("Nothing to copy.", "error"); }
-        }
-
-        /** Hides the Pastebin content view and shows the list container. */
-        function showPastebinListView() { if(pastebinViewDiv) pastebinViewDiv.classList.add('hidden'); const listContainer = document.getElementById('pastebin-list-container'); if (listContainer) listContainer.classList.remove('hidden'); }
-
-        // updateAlarmUI removed
-        // toggleAlarmFeature removed
-
-        /** Plays a random sound from the class sound list */
-        function playRandomClassSound() {
-            if (classSounds.length > 0) {
-                // Stop any currently playing sound first
-                classSounds.forEach(sound => { if(sound) sound.pause(); });
-
-                // Select and play a random sound
-                const sound = classSounds[Math.floor(Math.random() * classSounds.length)];
-                if(sound) {
-                    sound.currentTime = 0; // Rewind to start
-                    sound.play().catch(e => {
-                        console.error("Audio play failed:", e);
-                        showFeedback("Could not play sound.", "error");
-                    });
-                } else {
-                     console.warn("Selected sound element is invalid.");
-                     showFeedback("Could not play sound.", "error");
-                }
+        /** Plays the class buzzer sound */
+        function playClassSound() {
+            if (classBuzzerSound) {
+                classBuzzerSound.pause(); // Stop if already playing
+                classBuzzerSound.currentTime = 0; // Rewind
+                classBuzzerSound.play().catch(e => {
+                    console.error("Buzzer play failed:", e);
+                    showFeedback("Could not play buzzer sound.", "error");
+                });
             } else {
-                showFeedback("No class sounds available.", "error");
+                showFeedback("Buzzer sound not loaded.", "error");
             }
         }
 
-        /** Shows a temporary feedback message. */
-        let feedbackTimeout;
-        function showFeedback(message, type = "info") {
-            if (!feedbackElement) return; clearTimeout(feedbackTimeout);
-            feedbackElement.textContent = message; feedbackElement.className = 'feedback-message';
-            feedbackElement.style.backgroundColor = type === 'error' ? '#800' : 'var(--primary-color)';
-            feedbackElement.style.color = type === 'error' ? 'white' : 'var(--bg-color)';
-            feedbackElement.classList.add('show');
-            feedbackTimeout = setTimeout(() => feedbackElement.classList.remove('show'), 3000);
-        }
-
-        /** Sends the current theme information to the Weao iframe */
-        function sendThemeToIframe(themeName) { if (weaoIframe?.contentWindow) { setTimeout(() => { try { weaoIframe.contentWindow.postMessage({ dashboardTheme: themeName }, 'https://weao.xyz'); } catch (e) {} }, 150); } }
-
-        /** Decodes HTML entities in a string */
-         function decodeHtmlEntities(text) { if (!text) return ''; const textarea = document.createElement('textarea'); textarea.innerHTML = text; return textarea.value; }
-
-        // --- Reddit Sidebar Functions ---
-        function setRedditStatus(message, isError = false) { if(!redditPostsDiv) return; redditPostsDiv.innerHTML = ''; const statusDiv = document.createElement('div'); statusDiv.id = 'reddit-status'; statusDiv.textContent = message; if (isError) statusDiv.style.color = 'red'; redditPostsDiv.appendChild(statusDiv); }
-        async function fetchRedditPosts(query = null) {
-            if(!redditPostsDiv) { console.warn("Reddit posts container not found."); return; } setRedditStatus('Loading posts...'); let url = 'https://www.reddit.com/r/k12/.json?limit=25&raw_json=1'; if (query) url = `https://www.reddit.com/r/k12/search.json?q=${encodeURIComponent(query)}&restrict_sr=on&limit=25&sort=relevance&t=all&raw_json=1`;
-            try { const response = await fetch(url, { mode: 'cors', headers: { 'Accept': 'application/json' } }); if (!response.ok) throw new Error(`Reddit API Error: ${response.status} ${response.statusText}. CORS policy may be preventing access.`); const data = await response.json(); if (!data?.data?.children?.length) { setRedditStatus(query ? 'No results found.' : 'No posts found or unable to load.'); return; }
-                redditPostsDiv.innerHTML = ''; data.data.children.forEach(child => { const post = child.data; if (!post || post.stickied) return; const postDiv = document.createElement('div'); postDiv.classList.add('reddit-post'); const titleDiv = document.createElement('div'); titleDiv.classList.add('reddit-post-title'); const titleSpan = document.createElement('span'); titleSpan.textContent = decodeHtmlEntities(post.title); titleSpan.title = "Click to view post details"; titleSpan.addEventListener('click', () => showRedditPopup(post)); titleDiv.appendChild(titleSpan); const metaDiv = document.createElement('div'); metaDiv.classList.add('reddit-post-meta'); const postDate = new Date(post.created_utc * 1000); metaDiv.textContent = `by ${post.author} | ${post.score} points | ${postDate.toLocaleDateString()}`; postDiv.appendChild(titleDiv); postDiv.appendChild(metaDiv); redditPostsDiv.appendChild(postDiv); });
-            } catch (error) { console.error("Error fetching Reddit posts:", error); setRedditStatus(`Error: ${error.message}. Check browser console for details.`, true); }
-        }
-
-         // --- Reddit Popup Functions ---
-        function hideRedditPopup() { if(popupOverlay) popupOverlay.classList.remove('active'); }
-        function showRedditPopup(post) {
-            if(!popupOverlay || !popupTitle || !popupBody || !popupOriginalLink || !post) return; popupTitle.textContent = decodeHtmlEntities(post.title); popupBody.innerHTML = ''; const postHint = post.post_hint; const url = post.url_overridden_by_dest || post.url;
-             if (post.selftext_html) { popupBody.innerHTML = decodeHtmlEntities(post.selftext_html); } // CAUTION: XSS risk
-            else if (postHint === 'image' || /\.(jpg|jpeg|png|gif)$/i.test(url)) { const img = document.createElement('img'); img.src = url; img.alt = decodeHtmlEntities(post.title); popupBody.appendChild(img); }
-            else if (postHint === 'hosted:video' && post.media?.reddit_video?.fallback_url) { const video = document.createElement('video'); video.src = post.media.reddit_video.fallback_url; video.controls = true; video.muted = true; popupBody.appendChild(video); }
-            else if (postHint === 'rich:video' && post.media?.oembed?.html) { const embedHtml = decodeHtmlEntities(post.media.oembed.html); const tempDiv = document.createElement('div'); tempDiv.innerHTML = embedHtml; while (tempDiv.firstChild) { popupBody.appendChild(tempDiv.firstChild); } }
-            else if (postHint === 'link' || (url && url !== `https://www.reddit.com${post.permalink}`)) { const linkPara = document.createElement('p'); linkPara.textContent = "Links to: "; const link = document.createElement('a'); link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = url; linkPara.appendChild(link); popupBody.appendChild(linkPara); }
-            else { popupBody.innerHTML = '<p><i>No text content or preview available. View original post for details.</i></p>'; }
-            popupOriginalLink.href = `https://www.reddit.com${post.permalink}`; popupOverlay.classList.add('active');
-        }
+        let feedbackTimeout; function showFeedback(m,t="info"){ if(!feedbackElement)return;clearTimeout(feedbackTimeout);feedbackElement.textContent=m;feedbackElement.className='feedback-message';feedbackElement.style.backgroundColor=t==='error'?'#800':'var(--primary-color)';feedbackElement.style.color=t==='error'?'white':'var(--bg-color)';feedbackElement.classList.add('show');feedbackTimeout=setTimeout(()=>feedbackElement.classList.remove('show'),3000);}
+        function sendThemeToIframe(tN){ if(weaoIframe?.contentWindow){setTimeout(()=>{try{weaoIframe.contentWindow.postMessage({dashboardTheme:tN},'https://weao.xyz');}catch(e){}},150);}}
+        function decodeHtmlEntities(t){ if(!t)return'';const ta=document.createElement('textarea');ta.innerHTML=t;return ta.value;}
+        function setRedditStatus(m,e=false){ if(!redditPostsDiv)return;redditPostsDiv.innerHTML='';const sD=document.createElement('div');sD.id='reddit-status';sD.textContent=m;if(e)sD.style.color='red';redditPostsDiv.appendChild(sD);}
+        async function fetchRedditPosts(q=null){ if(!redditPostsDiv){return;}setRedditStatus('Loading...');let u='https://www.reddit.com/r/k12/.json?limit=25&raw_json=1';if(q)u=`https://www.reddit.com/r/k12/search.json?q=${encodeURIComponent(q)}&restrict_sr=on&limit=25&sort=relevance&t=all&raw_json=1`; try{const r=await fetch(u,{mode:'cors',headers:{'Accept':'application/json'}});if(!r.ok)throw new Error(`Reddit API Error: ${r.status}`);const d=await r.json();if(!d?.data?.children?.length){setRedditStatus(q?'No results.':'No posts.');return;} redditPostsDiv.innerHTML='';d.data.children.forEach(c=>{const p=c.data;if(!p||p.stickied)return;const pD=document.createElement('div');pD.classList.add('reddit-post');const tD=document.createElement('div');tD.classList.add('reddit-post-title');const tS=document.createElement('span');tS.textContent=decodeHtmlEntities(p.title);tS.title="Click view";tS.addEventListener('click',()=>showRedditPopup(p));tD.appendChild(tS);const mD=document.createElement('div');mD.classList.add('reddit-post-meta');const pDa=new Date(p.created_utc*1000);mD.textContent=`by ${p.author}|${p.score}|${pDa.toLocaleDateString()}`;pD.appendChild(tD);pD.appendChild(mD);redditPostsDiv.appendChild(pD);});} catch(e){console.error("Reddit error:",e);setRedditStatus(`Error: ${e.message}. Check console.`,true);}}
+        function hideRedditPopup(){if(popupOverlay)popupOverlay.classList.remove('active');}
+        function showRedditPopup(p){ if(!popupOverlay||!popupTitle||!popupBody||!popupOriginalLink||!p)return;popupTitle.textContent=decodeHtmlEntities(p.title);popupBody.innerHTML='';const pH=p.post_hint,u=p.url_overridden_by_dest||p.url; if(p.selftext_html){popupBody.innerHTML=decodeHtmlEntities(p.selftext_html);} else if(pH==='image'||/\.(jpg|jpeg|png|gif)$/i.test(u)){const i=document.createElement('img');i.src=u;i.alt=decodeHtmlEntities(p.title);popupBody.appendChild(i);} else if(pH==='hosted:video'&&p.media?.reddit_video?.fallback_url){const v=document.createElement('video');v.src=p.media.reddit_video.fallback_url;v.controls=true;v.muted=true;popupBody.appendChild(v);} else if(pH==='rich:video'&&p.media?.oembed?.html){const eH=decodeHtmlEntities(p.media.oembed.html);const tD=document.createElement('div');tD.innerHTML=eH;while(tD.firstChild){popupBody.appendChild(tD.firstChild);}} else if(pH==='link'||(u&&u!==`https://www.reddit.com${p.permalink}`)){const pp=document.createElement('p');pp.textContent="Links to: ";const l=document.createElement('a');l.href=u;l.target='_blank';l.rel='noopener noreferrer';l.textContent=u;pp.appendChild(l);popupBody.appendChild(pp);} else{popupBody.innerHTML='<p><i>No preview.</i></p>';} popupOriginalLink.href=`https://www.reddit.com${p.permalink}`;popupOverlay.classList.add('active');}
 
         // --- Initialization & Listeners ---
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem(THEME_KEY) || DEFAULT_THEME; setTheme(savedTheme);
-            loadPastebinButtons(); fetchRedditPosts();
-            let initialTab = ''; try { initialTab = window.location.hash.substring(1); } catch(e) {}
-            const validTabs = Array.from(tabButtons).map(btn => btn.dataset.tab); if (!initialTab || !validTabs.includes(initialTab)) initialTab = tabButtons[0]?.dataset.tab || 'class'; showTab(initialTab);
-            // updateAlarmUI removed
-
-            // --- Event Listeners ---
-            tabButtons.forEach(button => { button.addEventListener('click', () => showTab(button.dataset.tab)); });
-            if(themeToggleButton) themeToggleButton.addEventListener('click', toggleTheme);
-
-            document.addEventListener('mousemove', (e) => { if (crosshair) { crosshair.style.left = `${e.clientX}px`; crosshair.style.top = `${e.clientY}px`; const cs = window.getComputedStyle(crosshair); if (cs.opacity === '0') crosshair.style.opacity = '1'; } });
-            document.addEventListener('mouseleave', () => { if (crosshair) crosshair.style.opacity = '0'; });
-
-            if (copyPastebinBtn) copyPastebinBtn.addEventListener('click', copyPastebinContent);
-            if (backToPastebinListBtn) backToPastebinListBtn.addEventListener('click', showPastebinListView);
-            // playAlarmBtn listener removed
-
+        document.addEventListener('DOMContentLoaded',()=>{
+            const sT=localStorage.getItem(THEME_KEY)||DEFAULT_THEME; setTheme(sT); loadPastebinButtons(); fetchRedditPosts();
+            let iT='';try{iT=window.location.hash.substring(1);}catch(e){} const vT=Array.from(tabButtons).map(b=>b.dataset.tab); if(!iT||!vT.includes(iT))iT=tabButtons[0]?.dataset.tab||'class'; showTab(iT);
+            tabButtons.forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
+            if(themeToggleButton)themeToggleButton.addEventListener('click',toggleTheme);
+            document.addEventListener('mousemove',(e)=>{if(crosshair){crosshair.style.left=`${e.clientX}px`;crosshair.style.top=`${e.clientY}px`;const cs=window.getComputedStyle(crosshair);if(cs.opacity==='0')crosshair.style.opacity='1';}}); document.addEventListener('mouseleave',()=>{if(crosshair)crosshair.style.opacity='0';});
+            if(copyPastebinBtn)copyPastebinBtn.addEventListener('click',copyPastebinContent); if(backToPastebinListBtn)backToPastebinListBtn.addEventListener('click',showPastebinListView);
             // Class Buttons - Add listeners to PLAY sound directly
-            classPlaySoundButtons.forEach(button => {
-                button.addEventListener('click', playRandomClassSound); // Changed listener
-            });
-
-            if (redditSearchBtn && redditSearchInput) { const triggerSearch = () => fetchRedditPosts(redditSearchInput.value.trim() || null); redditSearchBtn.addEventListener('click', triggerSearch); redditSearchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') triggerSearch(); }); }
-            if (popupCloseBtn) popupCloseBtn.addEventListener('click', hideRedditPopup);
-            if (popupOverlay) popupOverlay.addEventListener('click', (event) => { if (event.target === popupOverlay) hideRedditPopup(); });
-            if (weaoIframe) { const sendInitialTheme = () => sendThemeToIframe(localStorage.getItem(THEME_KEY) || DEFAULT_THEME); weaoIframe.addEventListener('load', () => setTimeout(sendInitialTheme, 200)); sendInitialTheme(); }
+            classPlaySoundButtons.forEach(button => { button.addEventListener('click', playClassSound); }); // Changed listener
+            if(redditSearchBtn&&redditSearchInput){const tS=()=>fetchRedditPosts(redditSearchInput.value.trim()||null); redditSearchBtn.addEventListener('click',tS); redditSearchInput.addEventListener('keypress',(e)=>{if(e.key==='Enter')tS();});}
+            if(popupCloseBtn)popupCloseBtn.addEventListener('click',hideRedditPopup); if(popupOverlay)popupOverlay.addEventListener('click',(e)=>{if(e.target===popupOverlay)hideRedditPopup();});
+            if(weaoIframe){const sIT=()=>sendThemeToIframe(localStorage.getItem(THEME_KEY)||DEFAULT_THEME); weaoIframe.addEventListener('load',()=>setTimeout(sIT,200)); sIT();}
         });
     </script>
 </body>
