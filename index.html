@@ -7,37 +7,47 @@
     <style>
         /* CSS Variables for Theming */
         :root {
+            /* Dark Theme */
             --bg-gradient-dark: linear-gradient(135deg, #000000, #4d0000);
             --primary-color-dark: #ff0000;
             --text-color-dark: #ffffff;
             --bg-color-dark: #000000;
-            --shadow-color-dark: #ff0000;
+            --shadow-color-dark: #ff0000; /* Still used for other neon elements */
             --button-bg-dark: #000000;
             --button-text-dark: #ffffff;
             --input-bg-dark: #1a1a1a;
             --input-border-dark: #ff0000;
+            --sidebar-bg-dark: #101010;
+            --sidebar-border-dark: #444;
+            --link-color-dark: #ff7b7b;
 
+            /* Light Theme */
             --bg-gradient-light: linear-gradient(135deg, #e0e0e0, #ffffff);
-            --primary-color-light: #007bff; /* Example blue for light theme */
+            --primary-color-light: #007bff;
             --text-color-light: #333333;
             --bg-color-light: #ffffff;
             --shadow-color-light: rgba(0, 123, 255, 0.5);
             --button-bg-light: #f0f0f0;
             --button-text-light: #333333;
             --input-bg-light: #ffffff;
-            --input-border-light: #007bff;
+            --input-border-light: #cccccc;
+            --sidebar-bg-light: #f8f9fa;
+            --sidebar-border-light: #dee2e6;
+            --link-color-light: #0056b3;
 
             --transition-speed: 0.3s;
-            --neon-blur: 8px;
+            --neon-blur: 8px; /* Keep for non-cursor elements */
             --neon-blur-hover: 16px;
+            --sidebar-width: 280px; /* Width of the Reddit sidebar */
         }
 
         /* Apply Theme Variables */
         body {
             margin: 0;
-            font-family: 'Consolas', 'Monaco', monospace; /* Classic monospace */
-            overflow: hidden; /* Keep content from overflowing */
+            font-family: 'Consolas', 'Monaco', monospace;
+            overflow: hidden;
             transition: background var(--transition-speed) ease, color var(--transition-speed) ease;
+            cursor: none; /* Hide the default system cursor */
         }
 
         body.dark-theme {
@@ -51,6 +61,9 @@
             --button-text: var(--button-text-dark);
             --input-bg: var(--input-bg-dark);
             --input-border: var(--input-border-dark);
+            --sidebar-bg: var(--sidebar-bg-dark);
+            --sidebar-border: var(--sidebar-border-dark);
+            --link-color: var(--link-color-dark);
             --neon-blur-current: var(--neon-blur);
             --neon-blur-hover-current: var(--neon-blur-hover);
         }
@@ -66,7 +79,10 @@
             --button-text: var(--button-text-light);
             --input-bg: var(--input-bg-light);
             --input-border: var(--input-border-light);
-            --neon-blur-current: 3px; /* Less intense shadow for light */
+            --sidebar-bg: var(--sidebar-bg-light);
+            --sidebar-border: var(--sidebar-border-light);
+            --link-color: var(--link-color-light);
+            --neon-blur-current: 3px;
             --neon-blur-hover-current: 6px;
         }
 
@@ -77,21 +93,22 @@
             left: 15px;
             z-index: 1000;
             display: flex;
-            flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
-            gap: 8px; /* Spacing between buttons */
-            background-color: rgba(0, 0, 0, 0.3); /* Subtle background */
+            flex-wrap: wrap;
+            gap: 8px;
+            background-color: rgba(0, 0, 0, 0.3);
             padding: 5px;
             border-radius: 10px;
+            max-width: calc(100% - var(--sidebar-width) - 40px); /* Prevent overlap with sidebar */
         }
 
         .tab-button {
             padding: 10px 18px;
-            border: 1px solid transparent; /* Reserve space for border */
+            border: 1px solid transparent;
             background: var(--button-bg);
             color: var(--button-text);
             box-shadow: 0 0 var(--neon-blur-current) var(--shadow-color);
             border-radius: 8px;
-            cursor: pointer;
+            cursor: pointer; /* Still show pointer for buttons */
             transition: transform var(--transition-speed) ease,
                         box-shadow var(--transition-speed) ease,
                         background-color var(--transition-speed) ease,
@@ -108,15 +125,17 @@
         }
         .tab-button.active {
              background-color: var(--primary-color);
-             color: var(--bg-color); /* Contrast text on active */
+             color: var(--bg-color);
              font-weight: bold;
         }
 
         /* Tab Content Area */
         main {
-            padding: 90px 30px 30px; /* More top padding needed if tabs wrap */
-            height: calc(100vh - 120px); /* Full height minus padding */
-            overflow-y: auto; /* Allow scrolling within content */
+            padding: 90px 30px 30px;
+            /* Adjust right padding to account for sidebar */
+            padding-right: calc(var(--sidebar-width) + 40px);
+            height: calc(100vh - 120px); /* Full height minus top/bottom padding */
+            overflow-y: auto;
             box-sizing: border-box;
         }
 
@@ -139,53 +158,53 @@
             background: var(--button-bg);
             border: 2px solid var(--primary-color);
             color: var(--button-text);
-            padding: 12px 25px; /* Slightly less padding horiz */
-            font-size: 1.0em; /* Slightly smaller */
+            padding: 12px 25px;
+            font-size: 1.0em;
             border-radius: 10px;
-            box-shadow: 0 0 var(--neon-blur-current) var(--shadow-color), inset 0 0 5px rgba(var(--primary-color-rgb, 255, 0, 0), 0.3); /* Default RGB */
-            cursor: pointer;
+            box-shadow: 0 0 var(--neon-blur-current) var(--shadow-color), inset 0 0 5px rgba(var(--primary-color-rgb, 255, 0, 0), 0.3);
+            cursor: pointer; /* Show pointer */
             margin: 8px 5px;
             transition: transform var(--transition-speed) ease,
                         box-shadow var(--transition-speed) ease,
                         background-color var(--transition-speed) ease,
                         color var(--transition-speed) ease;
             font-family: inherit;
-            text-decoration: none; /* For link buttons */
-            display: inline-block; /* Ensure links behave like buttons */
-            vertical-align: middle; /* Align with text inputs */
+            text-decoration: none;
+            display: inline-block;
+            vertical-align: middle;
         }
-
         .neon-btn:hover {
             box-shadow: 0 0 var(--neon-blur-hover-current) var(--shadow-color), inset 0 0 10px rgba(var(--primary-color-rgb, 255, 0, 0), 0.5);
             transform: scale(1.05);
             background-color: var(--primary-color);
             color: var(--bg-color);
         }
-         .neon-btn:active {
-             transform: scale(0.98);
-         }
+         .neon-btn:active { transform: scale(0.98); }
 
-        /* Custom Crosshair */
+        /* Custom Cursor (Modified) */
         .crosshair {
-            position: fixed; /* Crucial for following cursor */
-            width: 24px; /* Size of the cross */
-            height: 24px;
-            transform: translate(-50%, -50%); /* Center on cursor */
-            pointer-events: none;
+            position: fixed;
+            width: 18px; /* Adjusted size */
+            height: 18px; /* Adjusted size */
+            transform: translate(-50%, -50%);
+            pointer-events: none; /* Essential */
             z-index: 2000;
-            opacity: 0; /* Start hidden */
-            transition: opacity 0.2s ease;
+            opacity: 0;
+            transition: opacity 0.1s ease; /* Faster fade */
         }
-        body:hover .crosshair { /* Show when mouse is over the body */
-            opacity: 1;
-        }
+        body:hover .crosshair { opacity: 1; }
         .crosshair::before,
         .crosshair::after {
             content: '';
             position: absolute;
-            background-color: var(--primary-color);
-            box-shadow: 0 0 5px var(--shadow-color);
-            transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+            background-color: #000000; /* Black color */
+            /* No box-shadow */
+            transition: background-color var(--transition-speed) ease;
+        }
+        /* Apply theme override for light theme */
+        body.light-theme .crosshair::before,
+        body.light-theme .crosshair::after {
+             background-color: #333333; /* Dark grey on light background */
         }
         .crosshair::before { /* Vertical line */
             left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%);
@@ -196,29 +215,29 @@
 
         /* Iframe Styling */
         iframe {
-            width: calc(100% - 4px); /* Account for border */
-            height: 70vh; /* Adjusted */
+            width: calc(100% - 4px);
+            height: 70vh;
             border: 2px solid var(--primary-color);
             filter: drop-shadow(0 0 10px var(--shadow-color));
             transition: border-color var(--transition-speed) ease, filter var(--transition-speed) ease;
-            background-color: var(--bg-color); /* Background for loading */
+            background-color: var(--bg-color);
             margin-top: 10px;
         }
 
-        /* Input Fields */
+        /* Input Fields (only needed for Reddit search now) */
         input[type="text"],
-        input[type="password"],
+        input[type="search"], /* Added search type */
         select,
-        textarea { /* Added select and textarea */
+        textarea {
             background-color: var(--input-bg);
             border: 1px solid var(--input-border);
             color: var(--text-color);
-            padding: 10px;
+            padding: 8px 10px; /* Slightly smaller padding */
             margin-bottom: 10px;
             border-radius: 5px;
             font-family: inherit;
-            width: 95%; /* More responsive width */
-            max-width: 300px; /* Max width */
+            font-size: 0.9em; /* Smaller font */
+            width: 100%; /* Full width within container */
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
              transition: background-color var(--transition-speed) ease,
                          border-color var(--transition-speed) ease,
@@ -226,7 +245,7 @@
              box-sizing: border-box;
         }
          input[type="text"]:focus,
-         input[type="password"]:focus,
+         input[type="search"]:focus,
          select:focus,
          textarea:focus {
              outline: none;
@@ -236,34 +255,32 @@
 
         /* Pastebin Specific */
          #pastebin-list-container {
-            max-height: 40vh; /* Adjust max height as needed */
-            overflow-y: auto; /* Enable vertical scrolling */
+            max-height: 40vh;
+            overflow-y: auto;
             padding: 10px;
             border: 1px solid var(--input-border);
             border-radius: 5px;
             margin-top: 10px;
-            background-color: rgba(0,0,0,0.1); /* Subtle background */
+            background-color: rgba(0,0,0,0.1);
         }
-        #pastebin-list .neon-btn { /* Target buttons *inside* #pastebin-list */
-            display: block; /* Stack vertically */
-            width: calc(100% - 10px); /* Full width minus padding/margin */
-            margin: 5px; /* Consistent margin */
-            margin-bottom: 8px; /* Space between buttons */
-            text-align: left; /* Align text left */
+        #pastebin-list .neon-btn {
+            display: block;
+            width: calc(100% - 10px);
+            margin: 5px;
+            margin-bottom: 8px;
+            text-align: left;
             padding-left: 15px;
             box-sizing: border-box;
         }
-        #pastebin-list .neon-btn:last-child {
-            margin-bottom: 5px; /* Consistent margin */
-        }
+        #pastebin-list .neon-btn:last-child { margin-bottom: 5px; }
         #pastebin-content {
             white-space: pre-wrap;
-            background: var(--input-bg); /* Use input background */
+            background: var(--input-bg);
             padding: 15px;
             border: 1px solid var(--input-border);
             box-shadow: 0 0 10px var(--shadow-color);
             color: var(--text-color);
-            max-height: 55vh; /* Adjusted */
+            max-height: 55vh;
             overflow-y: auto;
             border-radius: 5px;
             margin-bottom: 15px;
@@ -274,11 +291,11 @@
         #pastebin-view { display: none; }
 
         /* Class List Specific */
-        #class-list .neon-btn { /* Target buttons *inside* #class-list */
-            display: block; /* Stack vertically */
-            width: fit-content; /* Or set a specific width */
-            min-width: 150px; /* Ensure minimum width */
-            margin-bottom: 10px; /* Space between buttons */
+        #class-list .neon-btn {
+            display: block;
+            width: fit-content;
+            min-width: 250px; /* Wider for class names */
+            margin-bottom: 10px;
             margin-left: 0;
             margin-right: 0;
             text-align: left;
@@ -294,8 +311,8 @@
         .feedback-message {
             position: fixed;
             bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
+            left: 15px; /* Move to left away from sidebar */
+            transform: translateX(0);
             background-color: var(--primary-color);
             color: var(--bg-color);
             padding: 10px 20px;
@@ -303,16 +320,14 @@
             z-index: 3000;
             opacity: 0;
             transition: opacity 0.5s ease, bottom 0.5s ease;
-            pointer-events: none; /* Don't block clicks */
+            pointer-events: none;
             text-align: center;
+            max-width: calc(100% - var(--sidebar-width) - 50px);
         }
-        .feedback-message.show {
-            opacity: 1;
-            bottom: 30px;
-        }
+        .feedback-message.show { opacity: 1; bottom: 30px; }
 
         h2, h3 {
-            color: var(--primary-color); /* Use primary color for headers */
+            color: var(--primary-color);
             border-bottom: 1px solid var(--primary-color);
             padding-bottom: 5px;
             margin-bottom: 15px;
@@ -320,107 +335,98 @@
              transition: color var(--transition-speed) ease, border-color var(--transition-speed) ease;
         }
 
-        /* Chat UI Specific Styles */
-        #chat-container {
+        /* Reddit Sidebar Styles */
+        #reddit-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            border-left: 1px solid var(--sidebar-border);
+            z-index: 1500; /* Above main content, below tabs maybe */
             display: flex;
             flex-direction: column;
-            height: 75vh; /* Adjust height as needed */
-            border: 1px solid var(--input-border);
-            border-radius: 8px;
-            overflow: hidden; /* Contain children */
-            background-color: var(--input-bg);
+            overflow: hidden;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.2);
+             transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease;
         }
-        #chat-messages {
-            flex-grow: 1; /* Take available space */
-            overflow-y: auto; /* Scroll for messages */
+        #reddit-sidebar h3 {
             padding: 15px;
-            display: flex;
-            flex-direction: column; /* Stack messages */
-        }
-        .message {
-            max-width: 80%;
-            padding: 10px 15px;
-            border-radius: 15px;
-            margin-bottom: 10px;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-        .message.user {
-            background-color: var(--primary-color);
-            color: var(--bg-color);
-            border-bottom-right-radius: 5px;
-            align-self: flex-end; /* Align user messages right */
-            margin-left: auto; /* Push to right */
-        }
-        .message.assistant {
-            background-color: #333; /* Darker grey for assistant in dark */
-            color: var(--text-color);
-            border-bottom-left-radius: 5px;
-            align-self: flex-start; /* Align assistant messages left */
-            margin-right: auto; /* Push to left */
-        }
-        body.light-theme .message.assistant {
-            background-color: #e9ecef; /* Lighter grey for light theme */
-        }
-        .message.error {
-             background-color: #8b0000; /* Dark red for errors */
-             color: white;
-             border-radius: 5px;
-             align-self: center;
-             max-width: 90%;
-             text-align: center;
-        }
-        #chat-input-area {
-            display: flex;
-            padding: 10px;
-            border-top: 1px solid var(--input-border);
-            background-color: rgba(0,0,0,0.1);
-        }
-        #chat-input {
-            flex-grow: 1;
-            margin: 0 10px 0 0;
-            resize: none; /* Prevent manual resize */
-            height: 40px; /* Initial height */
-            padding: 10px;
-            box-sizing: border-box;
-        }
-        #send-chat-btn {
             margin: 0;
-            padding: 0 20px; /* Adjust padding */
-            height: 40px; /* Match input height */
+            border-bottom: 1px solid var(--sidebar-border);
+            font-size: 1.1em;
+            text-align: center;
+            flex-shrink: 0; /* Prevent shrinking */
         }
-        #chat-settings {
+        #reddit-search-area {
             padding: 10px 15px;
-            border-bottom: 1px solid var(--input-border);
+            border-bottom: 1px solid var(--sidebar-border);
             display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-            font-size: 0.9em;
+            gap: 5px;
+            flex-shrink: 0;
         }
-         #chat-settings label { margin-right: 5px; }
-         #chat-settings select, #chat-settings input[type="range"] {
-             padding: 5px;
-             margin-bottom: 0;
-             max-width: 180px; /* Limit width of controls */
-         }
-         #chat-settings input[type="range"] {
-             vertical-align: middle;
-             width: 100px;
-         }
-         #temp-value { font-weight: bold; min-width: 30px; display: inline-block; text-align: right; }
+        #reddit-search-input {
+             margin-bottom: 0; /* Override default */
+             flex-grow: 1;
+        }
+        #reddit-search-btn {
+            margin: 0; /* Override default */
+            padding: 8px 12px; /* Smaller button */
+            font-size: 0.9em;
+            height: auto; /* Adjust height */
+            flex-shrink: 0;
+            cursor: pointer; /* Show pointer */
+        }
+        #reddit-posts {
+            flex-grow: 1; /* Take remaining space */
+            overflow-y: auto; /* Scroll posts */
+            padding: 15px;
+        }
+        .reddit-post {
+            border-bottom: 1px solid var(--sidebar-border);
+            padding: 10px 0;
+            margin-bottom: 10px;
+        }
+        .reddit-post:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .reddit-post-title {
+            font-size: 0.95em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .reddit-post-title a {
+            color: var(--link-color);
+            text-decoration: none;
+            cursor: pointer; /* Show pointer */
+        }
+        .reddit-post-title a:hover {
+            text-decoration: underline;
+        }
+        .reddit-post-meta {
+            font-size: 0.8em;
+            opacity: 0.8;
+        }
+        #reddit-status {
+            padding: 15px;
+            text-align: center;
+            font-style: italic;
+            opacity: 0.7;
+        }
 
     </style>
 </head>
 <body>
-    <!-- Crosshair Element -->
+    <!-- Custom Cursor Element -->
     <div class="crosshair"></div>
 
     <!-- Tab Navigation -->
     <nav class="tabs">
         <button class="tab-button" data-tab="class">🎓 Class</button>
         <button class="tab-button" data-tab="pastebin">📋 Pastebins</button>
-        <button class="tab-button" data-tab="chat">💬 Chat AI</button> <!-- Added Chat Tab -->
+        <!-- Chat AI Tab Removed -->
         <button class="tab-button" data-tab="weao">🌐 Weao</button>
         <button class="tab-button" data-tab="alarm">⏰ Alarm</button>
         <button class="tab-button" data-tab="gaming">🎮 Gaming</button>
@@ -430,25 +436,29 @@
     <!-- Main Content Area -->
     <main>
         <section id="class" class="tab-content">
-            <h2>K12 Login & Links</h2>
-            <div id="login-form">
-                <input type="text" id="user" placeholder="Username (saved locally)"/><br>
-                <input type="password" id="pass" placeholder="Password (saved locally)"/><br>
-                <button class="neon-btn" id="save-login-btn">Save</button>
-                <button class="neon-btn" id="clear-login-btn">Clear</button>
-            </div>
-            <!-- Add this link/button -->
+            <h2>K12 Links & Classes</h2>
+            <!-- Login Form Removed -->
             <a href="https://login-learn.k12.com/#schedule" target="_blank" rel="noopener noreferrer" class="neon-btn link-btn">
                 Open K12 Schedule Page ↗️
             </a>
-            <span class="small-text">
-                Note: Login details are saved in your browser only for *these fields*. This dashboard cannot auto-login or fetch your live schedule due to security limitations.
-            </span>
-            <div id="class-buttons" class="hidden">
-                <h3>Example Class Links</h3>
+            <div id="class-buttons" style="margin-top: 20px;">
+                <h3>Class Quick Links (Example)</h3>
                 <div id="class-list">
-                    <!-- Class buttons will be loaded here (now vertically) -->
+                    <!-- Specific Class Buttons (Hardcoded based on image) -->
+                    <button class="neon-btn" onclick="showFeedback('Clicked 9:50 Math (add link?)')">
+                        9:50 Shepherd 7th Math
+                    </button>
+                    <button class="neon-btn" onclick="showFeedback('Clicked 10:45 Science (add link?)')">
+                        10:45 TR Jeffries 7th Science
+                    </button>
+                    <button class="neon-btn" onclick="showFeedback('Clicked 12:30 ELA (add link?)')">
+                        12:30 Mrs. Kieslich 7th ELA
+                    </button>
+                    <!-- Add more if needed -->
                 </div>
+                 <span class="small-text">
+                    These are example links based on your schedule image. Add actual URLs if available.
+                 </span>
             </div>
         </section>
 
@@ -460,7 +470,7 @@
                 </div>
             </div>
             <span class="small-text">
-                Note: Shows manually configured pastes. Fetching directly from user pages is limited by browser security (CORS).
+                Note: Shows manually configured pastes.
             </span>
             <div id="pastebin-view" class="hidden">
                  <div id="pastebin-loading" class="hidden">Loading content...</div>
@@ -470,36 +480,7 @@
             </div>
         </section>
 
-        <!-- Chat AI Tab Content -->
-        <section id="chat" class="tab-content">
-            <h2>Chat with Gemini AI</h2>
-             <div id="api-key-warning" style="color: yellow; background: #300; padding: 10px; border: 1px solid yellow; border-radius: 5px; margin-bottom: 15px;">
-                <strong>Security Warning:</strong> To use this chat, you MUST set up a secure backend (like a Vercel Serverless Function at <code>/api/chat</code>) to handle your API key. Never put your API key directly in this frontend code.
-            </div>
-            <div id="chat-settings">
-                 <label for="chat-model">Model:</label>
-                 <select id="chat-model">
-                     <option value="gemini-1.5-pro-latest">Gemini 1.5 Pro</option>
-                     <option value="gemini-1.5-flash-latest">Gemini 1.5 Flash</option>
-                     <option value="gemini-1.0-pro">Gemini 1.0 Pro</option>
-                     <!-- Add other models as needed -->
-                 </select>
-                 <label for="chat-temp">Temp:</label>
-                 <input type="range" id="chat-temp" min="0" max="1" step="0.1" value="0.7">
-                 <span id="temp-value">0.7</span>
-                 <!-- Add toggles for function calling/code execution here if implementing advanced features -->
-            </div>
-            <div id="chat-container">
-                <div id="chat-messages">
-                    <!-- Chat messages will appear here -->
-                    <div class="message assistant">Hello! How can I help you today? Remember to set up the secure backend for API calls.</div>
-                </div>
-                <div id="chat-input-area">
-                    <textarea id="chat-input" placeholder="Type your message..." rows="1"></textarea>
-                    <button id="send-chat-btn" class="neon-btn">Send</button>
-                </div>
-            </div>
-        </section>
+        <!-- Chat AI Section Removed -->
 
         <section id="weao" class="tab-content">
             <h2>Weao Mirror</h2>
@@ -519,26 +500,33 @@
         </section>
     </main>
 
+    <!-- Reddit Sidebar -->
+    <aside id="reddit-sidebar">
+        <h3>r/k12 Feed</h3>
+        <div id="reddit-search-area">
+            <input type="search" id="reddit-search-input" placeholder="Search r/k12...">
+            <button id="reddit-search-btn" class="neon-btn">🔎</button>
+        </div>
+        <div id="reddit-posts">
+            <!-- Reddit posts will be loaded here -->
+            <div id="reddit-status">Loading posts...</div>
+        </div>
+    </aside>
+
     <!-- Feedback Message Area -->
     <div id="feedback" class="feedback-message"></div>
 
     <script>
         // --- Configuration ---
-        const K12_USER_KEY = 'dashboard_k12user';
-        const K12_PASS_KEY = 'dashboard_k12pass';
+        // K12 Login Keys Removed
         const THEME_KEY = 'dashboard_theme';
-        const DEFAULT_THEME = 'dark-theme'; // 'dark-theme' or 'light-theme'
-        const CHAT_HISTORY_KEY = 'dashboard_chat_history'; // For saving chat locally
-
-        // Example class names
-        const CLASS_NAMES = ['Math', 'Science', 'History', 'English', 'PE', 'Art'];
+        const DEFAULT_THEME = 'dark-theme';
 
         // Pastebin Configuration (Manually Update)
         const PASTEBIN_LINKS = [
             { name: 'Example Script 1', url: 'https://pastebin.com/raw/MfSLGYzP' },
             { name: 'Example Script 2', url: 'https://pastebin.com/raw/gZDbqP4G' },
             // Add your actual pastebin raw links here
-            // { name: 'My Cool Script', url: 'https://pastebin.com/raw/YOUR_ID_HERE' },
         ];
 
         // --- DOM Elements ---
@@ -549,13 +537,9 @@
         const feedbackElement = document.getElementById('feedback');
         const crosshair = document.querySelector('.crosshair');
 
-        // Class Tab Elements
-        const userField = document.getElementById('user');
-        const passField = document.getElementById('pass');
-        const saveLoginBtn = document.getElementById('save-login-btn');
-        const clearLoginBtn = document.getElementById('clear-login-btn');
-        const classButtonsContainer = document.getElementById('class-buttons');
-        const classListDiv = document.getElementById('class-list');
+        // Class Tab Elements - Login fields removed
+        // const classButtonsContainer = document.getElementById('class-buttons'); // Can get if needed
+        // const classListDiv = document.getElementById('class-list'); // Can get if needed
 
         // Pastebin Tab Elements
         const pastebinListDiv = document.getElementById('pastebin-list');
@@ -575,16 +559,13 @@
         // Weao Iframe
         const weaoIframe = document.getElementById('weao-iframe');
 
-        // Chat Tab Elements
-        const chatMessagesDiv = document.getElementById('chat-messages');
-        const chatInput = document.getElementById('chat-input');
-        const sendChatBtn = document.getElementById('send-chat-btn');
-        const chatModelSelect = document.getElementById('chat-model');
-        const chatTempSlider = document.getElementById('chat-temp');
-        const tempValueSpan = document.getElementById('temp-value');
+        // Reddit Sidebar Elements
+        const redditPostsDiv = document.getElementById('reddit-posts');
+        const redditSearchInput = document.getElementById('reddit-search-input');
+        const redditSearchBtn = document.getElementById('reddit-search-btn');
+        const redditStatusDiv = document.getElementById('reddit-status');
 
-        // --- Global Variables ---
-        let chatHistory = []; // To store chat messages { role: 'user'/'assistant', content: '...' }
+        // Chat Elements Removed
 
         // --- Functions ---
 
@@ -599,24 +580,19 @@
             if (activeContent) activeContent.classList.add('active');
             if (activeButton) activeButton.classList.add('active');
 
-            // Update URL hash for potential bookmarking/linking
-            // Debounce or delay this if it causes issues on rapid clicks
             window.location.hash = tabId;
-
-             // Auto-scroll chat to bottom when switching to it
-             if (tabId === 'chat') {
-                 scrollToChatBottom();
-             }
         }
 
         /** Sets the theme on the body and saves preference. */
         function setTheme(themeName) {
-            body.className = ''; // Clear existing theme classes
+            body.className = '';
             body.classList.add(themeName);
             localStorage.setItem(THEME_KEY, themeName);
             updateThemeToggleButton(themeName);
-            setPrimaryColorRGB(themeName); // Update RGB variable
-            sendThemeToIframe(themeName); // Send theme update to Weao iframe
+            setPrimaryColorRGB(themeName);
+            sendThemeToIframe(themeName);
+            // Re-fetch reddit posts if sidebar is visible, as colors might change
+            fetchRedditPosts(redditSearchInput.value.trim() || null);
         }
 
         /** Helper to set RGB version of primary color for effects like inset shadow */
@@ -625,19 +601,15 @@
                 const style = getComputedStyle(document.documentElement);
                 const primaryColorHex = style.getPropertyValue(themeName === 'dark-theme' ? '--primary-color-dark' : '--primary-color-light').trim();
                 let r = 0, g = 0, b = 0;
-                if (primaryColorHex.length === 7) { // #RRGGBB
-                    r = parseInt(primaryColorHex.substring(1, 3), 16);
-                    g = parseInt(primaryColorHex.substring(3, 5), 16);
-                    b = parseInt(primaryColorHex.substring(5, 7), 16);
-                } else if (primaryColorHex.length === 4) { // #RGB
-                    r = parseInt(primaryColorHex.substring(1, 2) + primaryColorHex.substring(1, 2), 16);
-                    g = parseInt(primaryColorHex.substring(2, 3) + primaryColorHex.substring(2, 3), 16);
-                    b = parseInt(primaryColorHex.substring(3, 4) + primaryColorHex.substring(3, 4), 16);
+                if (primaryColorHex.length === 7) {
+                    r = parseInt(primaryColorHex.substring(1, 3), 16); g = parseInt(primaryColorHex.substring(3, 5), 16); b = parseInt(primaryColorHex.substring(5, 7), 16);
+                } else if (primaryColorHex.length === 4) {
+                    r = parseInt(p[1]+p[1], 16); g = parseInt(p[2]+p[2], 16); b = parseInt(p[3]+p[3], 16); // Fixed shorthand hex
                 }
                 document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
             } catch (e) {
                 console.error("Error setting primary color RGB:", e);
-                 document.documentElement.style.setProperty('--primary-color-rgb', `255, 0, 0`); // Fallback
+                document.documentElement.style.setProperty('--primary-color-rgb', `255, 0, 0`); // Fallback
             }
         }
 
@@ -653,69 +625,15 @@
             themeToggleButton.textContent = themeName === 'dark-theme' ? '☀️ Light' : '🌙 Dark';
         }
 
-        /** Saves K12 login credentials to localStorage. */
-        function saveLogin() {
-            const user = userField.value.trim();
-            const pass = passField.value.trim(); // WARNING: Storing passwords this way is insecure.
-            if (user) localStorage.setItem(K12_USER_KEY, user); else localStorage.removeItem(K12_USER_KEY);
-            if (pass) localStorage.setItem(K12_PASS_KEY, pass); else localStorage.removeItem(K12_PASS_KEY);
-            showFeedback(user || pass ? "Credentials saved locally." : "Credentials cleared.");
-            displayClassButtons(); // Update button visibility based on saved state
-        }
+        // K12 Login/Save/Load/Clear Functions Removed
 
-        /** Loads K12 credentials from localStorage if they exist. */
-        function loadLogin() {
-            const user = localStorage.getItem(K12_USER_KEY);
-            const pass = localStorage.getItem(K12_PASS_KEY);
-            if (user) userField.value = user;
-            if (pass) passField.value = pass;
-            displayClassButtons(); // Show buttons if credentials exist
-        }
-
-        /** Clears saved K12 credentials. */
-        function clearLogin() {
-            localStorage.removeItem(K12_USER_KEY);
-            localStorage.removeItem(K12_PASS_KEY);
-            userField.value = '';
-            passField.value = '';
-            classButtonsContainer.classList.add('hidden');
-            classListDiv.innerHTML = ''; // Clear buttons visually
-            showFeedback("Credentials cleared.");
-        }
-
-        /** Displays the class buttons section and populates it. */
-        function displayClassButtons() {
-            const user = localStorage.getItem(K12_USER_KEY);
-            // Only show example buttons if user has entered something (even if insecurely stored)
-            if (user) {
-                 classListDiv.innerHTML = ''; // Clear existing buttons
-                 if (CLASS_NAMES.length === 0) {
-                     classListDiv.innerHTML = '<p>No example classes configured.</p>';
-                 } else {
-                    CLASS_NAMES.forEach(className => {
-                        const btn = document.createElement('button');
-                        btn.textContent = className;
-                        btn.classList.add('neon-btn');
-                        btn.addEventListener('click', () => {
-                            showFeedback(`Example link for ${className} clicked.`);
-                            // Add actual link logic if desired:
-                            // window.open('https://your-k12-link-base/' + className.toLowerCase(), '_blank');
-                        });
-                        classListDiv.appendChild(btn);
-                    });
-                 }
-                classButtonsContainer.classList.remove('hidden');
-            } else {
-                 classButtonsContainer.classList.add('hidden');
-                 classListDiv.innerHTML = '';
-            }
-        }
+        // displayClassButtons function removed (buttons hardcoded in HTML)
 
         /** Populates the list of Pastebin buttons. */
         function loadPastebinButtons() {
-            pastebinListDiv.innerHTML = ''; // Clear loading message or previous buttons
+            pastebinListDiv.innerHTML = '';
             if (PASTEBIN_LINKS.length === 0) {
-                pastebinListDiv.innerHTML = '<p>No Pastebin links configured in the script.</p>';
+                pastebinListDiv.innerHTML = '<p>No Pastebin links configured.</p>';
                 return;
             }
             PASTEBIN_LINKS.forEach(paste => {
@@ -729,16 +647,14 @@
 
         /** Fetches and displays content from a Pastebin raw URL. */
         async function loadPastebinContent(url) {
-            pastebinListDiv.parentElement.classList.add('hidden'); // Hide container
+            pastebinListDiv.parentElement.classList.add('hidden');
             pastebinViewDiv.classList.remove('hidden');
-            pastebinContentPre.textContent = ''; // Clear previous content
-            pastebinLoadingDiv.classList.remove('hidden'); // Show loading indicator
+            pastebinContentPre.textContent = '';
+            pastebinLoadingDiv.classList.remove('hidden');
 
             try {
                 const response = await fetch(url);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
                 const data = await response.text();
                 pastebinContentPre.textContent = data;
             } catch (error) {
@@ -746,7 +662,7 @@
                 pastebinContentPre.textContent = `Error loading content from ${url}\n${error.message}`;
                 showFeedback(`Failed to load pastebin: ${error.message}`, "error");
             } finally {
-                 pastebinLoadingDiv.classList.add('hidden'); // Hide loading
+                 pastebinLoadingDiv.classList.add('hidden');
             }
         }
 
@@ -768,15 +684,15 @@
         /** Hides the Pastebin content view and shows the list. */
         function showPastebinListView() {
             pastebinViewDiv.classList.add('hidden');
-            pastebinListDiv.parentElement.classList.remove('hidden'); // Show container
+            pastebinListDiv.parentElement.classList.remove('hidden');
         }
 
         /** Plays a random alarm sound from the list. */
         function playRandomAlarm() {
             if (alarmSounds.length > 0) {
-                alarmSounds.forEach(sound => sound.pause()); // Stop others
+                alarmSounds.forEach(sound => sound.pause());
                 const randomIndex = Math.floor(Math.random() * alarmSounds.length);
-                alarmSounds[randomIndex].currentTime = 0; // Rewind
+                alarmSounds[randomIndex].currentTime = 0;
                 alarmSounds[randomIndex].play().catch(e => console.error("Audio play failed:", e));
             }
         }
@@ -787,7 +703,6 @@
             clearTimeout(feedbackTimeout);
             feedbackElement.textContent = message;
             feedbackElement.className = 'feedback-message'; // Reset classes
-            feedbackElement.classList.add(type === 'error' ? 'error' : 'info'); // Add type class if needed for styling
             feedbackElement.style.backgroundColor = type === 'error' ? '#800' : 'var(--primary-color)';
             feedbackElement.style.color = type === 'error' ? 'white' : 'var(--bg-color)';
             feedbackElement.classList.add('show');
@@ -800,129 +715,85 @@
         /** Sends the current theme information to the Weao iframe */
         function sendThemeToIframe(themeName) {
             if (weaoIframe && weaoIframe.contentWindow) {
-                setTimeout(() => { // Delay slightly
+                setTimeout(() => {
                     try {
                         weaoIframe.contentWindow.postMessage({ dashboardTheme: themeName }, 'https://weao.xyz');
-                    } catch (e) { /* console.warn("Could not send theme message to iframe:", e); */ }
+                    } catch (e) { /* Ignore potential errors */ }
                 }, 100);
             }
         }
 
-        // --- Chat Functions ---
+        // --- Reddit Sidebar Functions ---
 
-        /** Adds a message to the chat UI and history */
-        function addChatMessage(role, content) {
-            const messageDiv = document.createElement('div');
-            messageDiv.classList.add('message', role); // role is 'user', 'assistant', or 'error'
-            messageDiv.textContent = content;
-            chatMessagesDiv.appendChild(messageDiv);
-
-            // Add to JS history (don't save errors to history for next session)
-             if (role === 'user' || role === 'assistant') {
-                 chatHistory.push({ role, content });
-                 saveChatHistory(); // Save history to localStorage
+        /** Sets the status message in the Reddit sidebar */
+        function setRedditStatus(message, isError = false) {
+             redditPostsDiv.innerHTML = ''; // Clear previous posts/status
+             const statusDiv = document.createElement('div');
+             statusDiv.id = 'reddit-status';
+             statusDiv.textContent = message;
+             if (isError) {
+                 statusDiv.style.color = 'red';
              }
-
-            scrollToChatBottom();
+             redditPostsDiv.appendChild(statusDiv);
         }
 
-        /** Scrolls the chat messages div to the bottom */
-        function scrollToChatBottom() {
-            chatMessagesDiv.scrollTop = chatMessagesDiv.scrollHeight;
-        }
+        /** Fetches and displays posts from r/k12 */
+        async function fetchRedditPosts(query = null) {
+            setRedditStatus('Loading posts...'); // Show loading status
+            let url = 'https://www.reddit.com/r/k12/.json?limit=20'; // Base URL for recent posts
+            if (query) {
+                // Construct search URL
+                url = `https://www.reddit.com/r/k12/search.json?q=${encodeURIComponent(query)}&restrict_sr=on&limit=20&sort=relevance&t=all`;
+            }
 
-        /** Saves chat history to localStorage */
-        function saveChatHistory() {
-             try {
-                 localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(chatHistory));
-             } catch (e) {
-                 console.error("Error saving chat history:", e);
-                 showFeedback("Could not save chat history (storage full?).", "error");
-             }
-        }
-
-        /** Loads chat history from localStorage */
-        function loadChatHistory() {
-             const savedHistory = localStorage.getItem(CHAT_HISTORY_KEY);
-             if (savedHistory) {
-                 try {
-                     chatHistory = JSON.parse(savedHistory);
-                     // Clear existing messages except maybe the initial greeting
-                     chatMessagesDiv.innerHTML = '<div class="message assistant">Welcome back! Previous chat loaded.</div>';
-                     chatHistory.forEach(msg => {
-                         // Re-add messages without saving again
-                         const messageDiv = document.createElement('div');
-                         messageDiv.classList.add('message', msg.role);
-                         messageDiv.textContent = msg.content;
-                         chatMessagesDiv.appendChild(messageDiv);
-                     });
-                     scrollToChatBottom();
-                 } catch (e) {
-                     console.error("Error loading chat history:", e);
-                     localStorage.removeItem(CHAT_HISTORY_KEY); // Clear corrupted data
-                     chatHistory = []; // Reset history
-                     // Keep initial greeting
-                     chatMessagesDiv.innerHTML = '<div class="message assistant">Hello! How can I help you today? Remember to set up the secure backend for API calls.</div>';
-                 }
-             } else {
-                  // Keep initial greeting if no history
-                  chatMessagesDiv.innerHTML = '<div class="message assistant">Hello! How can I help you today? Remember to set up the secure backend for API calls.</div>';
-             }
-        }
-
-
-        /** Handles sending a chat message */
-        async function sendChatMessage() {
-            const messageText = chatInput.value.trim();
-            if (!messageText) return;
-
-            addChatMessage('user', messageText);
-            chatInput.value = ''; // Clear input
-            chatInput.style.height = '40px'; // Reset height
-            sendChatBtn.disabled = true; // Disable button while waiting
-            sendChatBtn.textContent = '...';
-
-            const model = chatModelSelect.value;
-            const temperature = parseFloat(chatTempSlider.value);
-
-            // **** VITAL: Secure Backend Call ****
-            // This is where you call your Vercel Serverless Function.
-            // The function should handle the API key securely.
             try {
-                const response = await fetch('/api/chat', { // Your backend endpoint
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        // Send the recent history for context, adjust as needed for token limits
-                        history: chatHistory.slice(-10), // Send last 10 messages (user + assistant)
-                        message: messageText,
-                        model: model,
-                        temperature: temperature,
-                        // Add other parameters like function calling flags if needed
-                    }),
-                });
+                // NOTE: This fetch might fail due to CORS policy on Reddit's side.
+                const response = await fetch(url, { mode: 'cors' }); // Explicitly try CORS
 
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ detail: 'Unknown error structure' })); // Try to get error detail
-                    throw new Error(`API Error (${response.status}): ${errorData.detail || response.statusText}`);
+                    if (response.status === 429) { // Rate limited
+                         throw new Error(`Rate limited by Reddit (Status ${response.status}). Please wait and try again.`);
+                    } else {
+                         throw new Error(`Failed to fetch Reddit data (Status ${response.status}). CORS policy might be blocking this.`);
+                    }
                 }
 
-                const data = await response.json(); // Expecting { response: "AI message" } from backend
+                const data = await response.json();
 
-                if (data.response) {
-                    addChatMessage('assistant', data.response);
-                } else {
-                     throw new Error("Received empty response from backend.");
+                if (!data || !data.data || !data.data.children || data.data.children.length === 0) {
+                    setRedditStatus(query ? 'No results found for your search.' : 'No posts found or unable to load.');
+                    return;
                 }
+
+                redditPostsDiv.innerHTML = ''; // Clear loading status
+                data.data.children.forEach(child => {
+                    const post = child.data;
+                    if (!post || post.stickied) return; // Skip stickied posts
+
+                    const postDiv = document.createElement('div');
+                    postDiv.classList.add('reddit-post');
+
+                    const titleDiv = document.createElement('div');
+                    titleDiv.classList.add('reddit-post-title');
+                    const titleLink = document.createElement('a');
+                    titleLink.href = `https://www.reddit.com${post.permalink}`;
+                    titleLink.textContent = post.title;
+                    titleLink.target = '_blank'; // Open in new tab
+                    titleLink.rel = 'noopener noreferrer';
+                    titleDiv.appendChild(titleLink);
+
+                    const metaDiv = document.createElement('div');
+                    metaDiv.classList.add('reddit-post-meta');
+                    metaDiv.textContent = `by ${post.author} | ${post.score} points`;
+
+                    postDiv.appendChild(titleDiv);
+                    postDiv.appendChild(metaDiv);
+                    redditPostsDiv.appendChild(postDiv);
+                });
 
             } catch (error) {
-                console.error("Chat API call failed:", error);
-                addChatMessage('error', `Error: ${error.message}. Could not get response. Is the backend running?`);
-            } finally {
-                 sendChatBtn.disabled = false; // Re-enable button
-                 sendChatBtn.textContent = 'Send';
+                console.error("Error fetching Reddit posts:", error);
+                setRedditStatus(`Error: ${error.message}`, true);
             }
         }
 
@@ -930,40 +801,33 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Set initial theme
             const savedTheme = localStorage.getItem(THEME_KEY) || DEFAULT_THEME;
-            setTheme(savedTheme); // setTheme also calls setPrimaryColorRGB
-
-            // Load saved login info
-            loadLogin();
+            setTheme(savedTheme);
 
             // Load Pastebin buttons
             loadPastebinButtons();
 
-             // Load Chat History
-             loadChatHistory();
+            // Load initial Reddit posts
+            fetchRedditPosts();
 
-            // Set initial active tab (e.g., the first one or based on hash)
+            // Set initial active tab
             let initialTab = window.location.hash.substring(1);
-            // Validate initialTab or default
             const validTabs = Array.from(tabButtons).map(btn => btn.dataset.tab);
             if (!initialTab || !validTabs.includes(initialTab)) {
                 initialTab = tabButtons[0]?.dataset.tab || 'class';
             }
             showTab(initialTab);
 
-
             // --- Event Listeners ---
 
             // Tab switching
             tabButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    showTab(button.dataset.tab);
-                });
+                button.addEventListener('click', () => showTab(button.dataset.tab));
             });
 
             // Theme toggle
             themeToggleButton.addEventListener('click', toggleTheme);
 
-            // Crosshair Follow Mouse Listener
+            // Custom Cursor Follow
             document.addEventListener('mousemove', (e) => {
                 if (crosshair) {
                     crosshair.style.left = `${e.clientX}px`;
@@ -974,11 +838,6 @@
             document.addEventListener('mouseleave', () => { if (crosshair) crosshair.style.opacity = '0'; });
             document.addEventListener('mouseenter', () => { if (crosshair) crosshair.style.opacity = '1'; });
 
-
-            // Class Tab buttons
-            if (saveLoginBtn) saveLoginBtn.addEventListener('click', saveLogin);
-            if (clearLoginBtn) clearLoginBtn.addEventListener('click', clearLogin);
-
             // Pastebin Tab buttons
             if (copyPastebinBtn) copyPastebinBtn.addEventListener('click', copyPastebinContent);
             if (backToPastebinListBtn) backToPastebinListBtn.addEventListener('click', showPastebinListView);
@@ -986,42 +845,25 @@
             // Alarm Tab button
             if (playAlarmBtn) playAlarmBtn.addEventListener('click', playRandomAlarm);
 
-            // Chat Tab Listeners
-            if (sendChatBtn) sendChatBtn.addEventListener('click', sendChatMessage);
-            if (chatInput) {
-                chatInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) { // Send on Enter, allow Shift+Enter for newline
-                        e.preventDefault(); // Prevent default newline insertion
-                        sendChatMessage();
+            // Reddit Search Listeners
+            if (redditSearchBtn) {
+                redditSearchBtn.addEventListener('click', () => {
+                    fetchRedditPosts(redditSearchInput.value.trim() || null);
+                });
+            }
+            if (redditSearchInput) {
+                redditSearchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        fetchRedditPosts(redditSearchInput.value.trim() || null);
                     }
                 });
-                 // Auto-resize textarea
-                 chatInput.addEventListener('input', () => {
-                     chatInput.style.height = 'auto'; // Reset height
-                     chatInput.style.height = `${chatInput.scrollHeight}px`; // Set to scroll height
-                 });
             }
-             if (chatTempSlider) {
-                 chatTempSlider.addEventListener('input', (e) => {
-                     tempValueSpan.textContent = parseFloat(e.target.value).toFixed(1);
-                 });
-             }
 
-
-             // Listen for messages from Weao iframe (optional)
-             window.addEventListener('message', function (event) {
-                 if (event.origin !== 'https://weao.xyz') return;
-                 // console.log('Message received from weao.xyz:', event.data);
-                 // Handle message if needed
-             });
-
-             // Send theme initially after Weao iframe might have loaded
+             // Weao Iframe Theme Sync
              if (weaoIframe) {
-                 weaoIframe.addEventListener('load', () => {
-                     sendThemeToIframe(localStorage.getItem(THEME_KEY) || DEFAULT_THEME);
-                 });
-                 // Also send theme immediately in case it's already loaded (e.g., cached)
-                 sendThemeToIframe(localStorage.getItem(THEME_KEY) || DEFAULT_THEME);
+                 const sendTheme = () => sendThemeToIframe(localStorage.getItem(THEME_KEY) || DEFAULT_THEME);
+                 weaoIframe.addEventListener('load', sendTheme);
+                 sendTheme(); // Also send immediately
              }
         });
 
