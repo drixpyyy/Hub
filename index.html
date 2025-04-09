@@ -146,7 +146,7 @@
         }
         .neon-btn:active { transform: scale(0.98); }
 
-        /* Custom Cursor (Modified Color) */
+        /* Custom Cursor (Dark Green) */
         .crosshair {
             position: fixed; width: 18px; height: 18px;
             transform: translate(-50%, -50%); pointer-events: none;
@@ -157,10 +157,7 @@
         .crosshair::after {
             content: ''; position: absolute;
             background-color: var(--cursor-color); /* Use variable for color */
-            /* No box-shadow */
-            /* No transition needed for color if it's constant */
         }
-        /* Theme override for light theme removed, use dark green on both */
         .crosshair::before { left: 50%; top: 0; width: 2px; height: 100%; transform: translateX(-50%); }
         .crosshair::after { top: 50%; left: 0; width: 100%; height: 2px; transform: translateY(-50%); }
 
@@ -431,73 +428,321 @@
         const popupOriginalLink = document.getElementById('reddit-popup-original-link');
 
         // --- Functions ---
+
+        /** Shows a specific tab and hides others. */
         function showTab(tabId) {
-            tabContents.forEach(c => c.classList.remove('active')); tabButtons.forEach(b => b.classList.remove('active'));
-            const aC = document.getElementById(tabId); const aB = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
-            if(aC) aC.classList.add('active'); if(aB) aB.classList.add('active');
+            tabContents.forEach(content => content.classList.remove('active'));
+            tabButtons.forEach(button => button.classList.remove('active'));
+            const activeContent = document.getElementById(tabId);
+            const activeButton = document.querySelector(`.tab-button[data-tab="${tabId}"]`);
+            if (activeContent) activeContent.classList.add('active');
+            if (activeButton) activeButton.classList.add('active');
             try { window.location.hash = tabId; } catch(e) {}
         }
+
+        /** Sets the theme on the body and saves preference. */
         function setTheme(themeName) {
-            body.className = ''; body.classList.add(themeName); localStorage.setItem(THEME_KEY, themeName);
-            updateThemeToggleButton(themeName); setPrimaryColorRGB(themeName); sendThemeToIframe(themeName);
-        }
-        function setPrimaryColorRGB(themeName) {
-            try {
-                const style = getComputedStyle(document.documentElement), pCH = style.getPropertyValue(themeName === 'dark-theme' ? '--primary-color-dark' : '--primary-color-light').trim();
-                let r=0,g=0,b=0; if(pCH.startsWith('#')){ const h = pCH.substring(1); if(h.length===6){r=parseInt(h.substring(0,2),16);g=parseInt(h.substring(2,4),16);b=parseInt(h.substring(4,6),16);}else if(h.length===3){r=parseInt(h[0]+h[0],16);g=parseInt(h[1]+h[1],16);b=parseInt(h[2]+h[2],16);}}
-                document.documentElement.style.setProperty('--primary-color-rgb',`${r}, ${g}, ${b}`);
-            } catch(e){ document.documentElement.style.setProperty('--primary-color-rgb',`255,0,0`); }
-        }
-        function toggleTheme() { const cT=localStorage.getItem(THEME_KEY)||DEFAULT_THEME; setTheme(cT==='dark-theme'?'light-theme':'dark-theme'); }
-        function updateThemeToggleButton(themeName){ if(themeToggleButton) themeToggleButton.textContent = themeName==='dark-theme'?'☀️ Light':'🌙 Dark'; }
-        function loadPastebinButtons(){
-            if(!pastebinListDiv) return; pastebinListDiv.innerHTML='';
-            if(PASTEBIN_LINKS.length===0){ pastebinListDiv.innerHTML='<p>No Pastebin links configured.</p>'; return; }
-            PASTEBIN_LINKS.forEach(p=>{ const b=document.createElement('button');b.textContent=p.name;b.classList.add('neon-btn');b.addEventListener('click',()=>loadPastebinContent(p.url));pastebinListDiv.appendChild(b); });
-        }
-        async function loadPastebinContent(url){
-            const lC=document.getElementById('pastebin-list-container'); if(lC)lC.classList.add('hidden'); if(pastebinViewDiv)pastebinViewDiv.classList.remove('hidden');
-            if(pastebinContentPre)pastebinContentPre.textContent='';if(pastebinLoadingDiv)pastebinLoadingDiv.classList.remove('hidden');
-            try{ const r=await fetch(url);if(!r.ok)throw new Error(`HTTP ${r.status}`); const d=await r.text(); if(pastebinContentPre)pastebinContentPre.textContent=d; }
-            catch(e){ if(pastebinContentPre)pastebinContentPre.textContent=`Error: ${e.message}`; showFeedback(`Load pastebin fail: ${e.message}`,"error"); }
-            finally{ if(pastebinLoadingDiv)pastebinLoadingDiv.classList.add('hidden'); }
-        }
-        function copyPastebinContent(){ const t=pastebinContentPre?.textContent; if(navigator.clipboard&&t){navigator.clipboard.writeText(t).then(()=>showFeedback("Copied!")).catch(()=>showFeedback("Copy failed.","error"));}else if(t){showFeedback("Clipboard fail.","error");}else{showFeedback("Nothing to copy.","error");} }
-        function showPastebinListView(){ if(pastebinViewDiv)pastebinViewDiv.classList.add('hidden'); const lC=document.getElementById('pastebin-list-container'); if(lC)lC.classList.remove('hidden'); }
-        function playRandomAlarm(){ if(alarmSounds.length>0){ alarmSounds.forEach(s=>{if(s)s.pause();}); const s=alarmSounds[Math.floor(Math.random()*alarmSounds.length)]; if(s){s.currentTime=0;s.play().catch(e=>console.error("Audio fail:",e));} } }
-        let feedbackTimeout; function showFeedback(m,t="info"){ if(!feedbackElement)return; clearTimeout(feedbackTimeout); feedbackElement.textContent=m;feedbackElement.className='feedback-message'; feedbackElement.style.backgroundColor=t==='error'?'#800':'var(--primary-color)'; feedbackElement.style.color=t==='error'?'white':'var(--bg-color)'; feedbackElement.classList.add('show'); feedbackTimeout=setTimeout(()=>feedbackElement.classList.remove('show'),3000); }
-        function sendThemeToIframe(tN){ if(weaoIframe?.contentWindow){setTimeout(() => { try{weaoIframe.contentWindow.postMessage({dashboardTheme:tN},'https://weao.xyz');}catch(e){} },150);}}
-        function decodeHtmlEntities(t){ const ta=document.createElement('textarea');ta.innerHTML=t;return ta.value; }
-        function setRedditStatus(m,e=false){ if(!redditPostsDiv)return; redditPostsDiv.innerHTML=''; const sD=document.createElement('div');sD.id='reddit-status';sD.textContent=m;if(e)sD.style.color='red';redditPostsDiv.appendChild(sD); }
-        async function fetchRedditPosts(q=null){
-            if(!redditPostsDiv){return;} setRedditStatus('Loading posts...'); let u='https://www.reddit.com/r/k12/.json?limit=25&raw_json=1'; if(q)u=`https://www.reddit.com/r/k12/search.json?q=${encodeURIComponent(q)}&restrict_sr=on&limit=25&sort=relevance&t=all&raw_json=1`;
-            try{ const r=await fetch(u,{mode:'cors',headers:{'Accept':'application/json'}}); if(!r.ok)throw new Error(`Reddit API Error: ${r.status}`); const d=await r.json(); if(!d?.data?.children?.length){setRedditStatus(q?'No results found.':'No posts found.'); return;}
-                redditPostsDiv.innerHTML=''; d.data.children.forEach(c=>{ const p=c.data; if(!p||p.stickied)return; const pD=document.createElement('div');pD.classList.add('reddit-post'); const tD=document.createElement('div');tD.classList.add('reddit-post-title'); const tS=document.createElement('span'); tS.textContent=decodeHtmlEntities(p.title); tS.title="Click to view"; tS.addEventListener('click',()=>showRedditPopup(p)); tD.appendChild(tS); const mD=document.createElement('div');mD.classList.add('reddit-post-meta'); const pDa=new Date(p.created_utc*1000); mD.textContent=`by ${p.author} | ${p.score} | ${pDa.toLocaleDateString()}`; pD.appendChild(tD);pD.appendChild(mD);redditPostsDiv.appendChild(pD); });
-            }catch(e){console.error("Reddit error:",e);setRedditStatus(`Error: ${e.message}. Check console.`,true);}
-        }
-        function hideRedditPopup(){if(popupOverlay)popupOverlay.classList.remove('active');}
-        function showRedditPopup(p){ if(!popupOverlay||!p)return; popupTitle.textContent=decodeHtmlEntities(p.title); popupBody.innerHTML=''; const p H=p.post_hint,u=p.url_overridden_by_dest||p.url;
-            if(p.selftext_html){popupBody.innerHTML=decodeHtmlEntities(p.selftext_html);} // CAUTION: XSS risk if source not trusted
-            else if(pH==='image'||/\.(jpg|jpeg|png|gif)$/i.test(u)){const i=document.createElement('img');i.src=u;i.alt=decodeHtmlEntities(p.title);popupBody.appendChild(i);}
-            else if(pH==='hosted:video'&&p.media?.reddit_video?.fallback_url){const v=document.createElement('video');v.src=p.media.reddit_video.fallback_url;v.controls=true;v.muted=true;popupBody.appendChild(v);}
-            else if(pH==='rich:video'&&p.media?.oembed?.html){popupBody.innerHTML=decodeHtmlEntities(p.media.oembed.html);}
-            else if(pH==='link'||u!==`https://www.reddit.com${p.permalink}`){const pp=document.createElement('p');pp.textContent="Links to: ";const l=document.createElement('a');l.href=u;l.target='_blank';l.rel='noopener noreferrer';l.textContent=u;pp.appendChild(l);popupBody.appendChild(pp);}
-            else{popupBody.innerHTML='<p><i>No preview available.</i></p>';}
-            popupOriginalLink.href=`https://www.reddit.com${p.permalink}`; popupOverlay.classList.add('active');
+            body.className = ''; // Clear previous theme class
+            body.classList.add(themeName); // Apply new theme class
+            localStorage.setItem(THEME_KEY, themeName);
+            updateThemeToggleButton(themeName);
+            setPrimaryColorRGB(themeName); // For JS dependent styles or effects
+            sendThemeToIframe(themeName); // Notify iframe if needed
         }
 
+        /** Helper to set RGB version of primary color for effects like inset shadow */
+        function setPrimaryColorRGB(themeName) {
+            try {
+                const style = getComputedStyle(document.documentElement);
+                const primaryColorHex = style.getPropertyValue(themeName === 'dark-theme' ? '--primary-color-dark' : '--primary-color-light').trim();
+                let r = 0, g = 0, b = 0;
+                if (primaryColorHex.startsWith('#')) {
+                    const hex = primaryColorHex.substring(1);
+                    if (hex.length === 6) { r = parseInt(hex.substring(0, 2), 16); g = parseInt(hex.substring(2, 4), 16); b = parseInt(hex.substring(4, 6), 16); }
+                    else if (hex.length === 3) { r = parseInt(hex[0] + hex[0], 16); g = parseInt(hex[1] + hex[1], 16); b = parseInt(hex[2] + hex[2], 16); }
+                }
+                document.documentElement.style.setProperty('--primary-color-rgb', `${r}, ${g}, ${b}`);
+            } catch (e) { console.error("Error setting primary color RGB:", e); document.documentElement.style.setProperty('--primary-color-rgb', `255, 0, 0`); }
+        }
+
+        /** Toggles between dark and light themes. */
+        function toggleTheme() {
+            const currentTheme = localStorage.getItem(THEME_KEY) || DEFAULT_THEME;
+            const newTheme = currentTheme === 'dark-theme' ? 'light-theme' : 'dark-theme';
+            setTheme(newTheme);
+        }
+
+        /** Updates the theme toggle button text/icon. */
+        function updateThemeToggleButton(themeName) {
+            if(themeToggleButton) themeToggleButton.textContent = themeName === 'dark-theme' ? '☀️ Light' : '🌙 Dark';
+        }
+
+        /** Populates the list of Pastebin buttons. */
+        function loadPastebinButtons() {
+            if (!pastebinListDiv) return;
+            pastebinListDiv.innerHTML = ''; // Clear placeholder or old buttons
+            if (PASTEBIN_LINKS.length === 0) { pastebinListDiv.innerHTML = '<p>No Pastebin links configured.</p>'; return; }
+            PASTEBIN_LINKS.forEach(paste => {
+                const btn = document.createElement('button');
+                btn.textContent = paste.name; btn.classList.add('neon-btn');
+                btn.addEventListener('click', () => loadPastebinContent(paste.url));
+                pastebinListDiv.appendChild(btn);
+            });
+        }
+
+        /** Fetches and displays content from a Pastebin raw URL. */
+        async function loadPastebinContent(url) {
+            const listContainer = document.getElementById('pastebin-list-container');
+            if (listContainer) listContainer.classList.add('hidden');
+            if(pastebinViewDiv) pastebinViewDiv.classList.remove('hidden');
+            if(pastebinContentPre) pastebinContentPre.textContent = '';
+            if(pastebinLoadingDiv) pastebinLoadingDiv.classList.remove('hidden');
+
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                const data = await response.text();
+                if(pastebinContentPre) pastebinContentPre.textContent = data;
+            } catch (error) {
+                console.error("Failed load Pastebin:", error);
+                if(pastebinContentPre) pastebinContentPre.textContent = `Error: ${error.message}`;
+                showFeedback(`Failed load pastebin: ${error.message}`, "error");
+            } finally { if(pastebinLoadingDiv) pastebinLoadingDiv.classList.add('hidden'); }
+        }
+
+        /** Copies the displayed Pastebin content to the clipboard. */
+        function copyPastebinContent() {
+            const text = pastebinContentPre?.textContent;
+            if (navigator.clipboard && text) {
+                navigator.clipboard.writeText(text) .then(() => showFeedback("Copied!")) .catch(err => showFeedback("Copy failed.", "error"));
+            } else if (text) { showFeedback("Clipboard API not available.", "error"); }
+            else { showFeedback("Nothing to copy.", "error"); }
+        }
+
+        /** Hides the Pastebin content view and shows the list container. */
+        function showPastebinListView() {
+             if(pastebinViewDiv) pastebinViewDiv.classList.add('hidden');
+             const listContainer = document.getElementById('pastebin-list-container');
+             if (listContainer) listContainer.classList.remove('hidden');
+        }
+
+        /** Plays a random alarm sound from the list. */
+        function playRandomAlarm() {
+            if (alarmSounds.length > 0) {
+                alarmSounds.forEach(sound => { if(sound) sound.pause(); });
+                const sound = alarmSounds[Math.floor(Math.random() * alarmSounds.length)];
+                if(sound) { sound.currentTime = 0; sound.play().catch(e => console.error("Audio failed:", e)); }
+            }
+        }
+
+        /** Shows a temporary feedback message. */
+        let feedbackTimeout;
+        function showFeedback(message, type = "info") {
+            if (!feedbackElement) return;
+            clearTimeout(feedbackTimeout);
+            feedbackElement.textContent = message; feedbackElement.className = 'feedback-message';
+            feedbackElement.style.backgroundColor = type === 'error' ? '#800' : 'var(--primary-color)';
+            feedbackElement.style.color = type === 'error' ? 'white' : 'var(--bg-color)';
+            feedbackElement.classList.add('show');
+            feedbackTimeout = setTimeout(() => feedbackElement.classList.remove('show'), 3000);
+        }
+
+        /** Sends the current theme information to the Weao iframe */
+        function sendThemeToIframe(themeName) {
+            if (weaoIframe?.contentWindow) {
+                setTimeout(() => { try { weaoIframe.contentWindow.postMessage({ dashboardTheme: themeName }, 'https://weao.xyz'); } catch (e) {} }, 150);
+            }
+        }
+
+        /** Decodes HTML entities in a string */
+         function decodeHtmlEntities(text) {
+             if (!text) return ''; // Handle null/undefined input
+             const textarea = document.createElement('textarea');
+             textarea.innerHTML = text;
+             return textarea.value;
+         }
+
+        // --- Reddit Sidebar Functions ---
+
+        /** Sets the status message in the Reddit sidebar */
+        function setRedditStatus(message, isError = false) {
+             if(!redditPostsDiv) return;
+             redditPostsDiv.innerHTML = ''; // Clear previous posts/status
+             const statusDiv = document.createElement('div'); statusDiv.id = 'reddit-status';
+             statusDiv.textContent = message; if (isError) statusDiv.style.color = 'red';
+             redditPostsDiv.appendChild(statusDiv);
+        }
+
+        /** Fetches and displays posts from r/k12 */
+        async function fetchRedditPosts(query = null) {
+            if(!redditPostsDiv) { console.warn("Reddit posts container not found."); return; }
+            setRedditStatus('Loading posts...');
+            let url = 'https://www.reddit.com/r/k12/.json?limit=25&raw_json=1'; // Added raw_json=1
+            if (query) url = `https://www.reddit.com/r/k12/search.json?q=${encodeURIComponent(query)}&restrict_sr=on&limit=25&sort=relevance&t=all&raw_json=1`;
+
+            try {
+                const response = await fetch(url, { mode: 'cors', headers: { 'Accept': 'application/json' } });
+                if (!response.ok) throw new Error(`Reddit API Error: ${response.status} ${response.statusText}. CORS policy may be preventing access.`);
+                const data = await response.json();
+                if (!data?.data?.children?.length) { setRedditStatus(query ? 'No results found.' : 'No posts found or unable to load.'); return; }
+
+                redditPostsDiv.innerHTML = ''; // Clear status
+                data.data.children.forEach(child => {
+                    const post = child.data;
+                    if (!post || post.stickied) return; // Skip if no post data or if stickied
+
+                    const postDiv = document.createElement('div'); postDiv.classList.add('reddit-post');
+                    const titleDiv = document.createElement('div'); titleDiv.classList.add('reddit-post-title');
+
+                    const titleSpan = document.createElement('span');
+                    titleSpan.textContent = decodeHtmlEntities(post.title); // Decode entities for display
+                    titleSpan.title = "Click to view post details"; // Tooltip
+                    titleSpan.addEventListener('click', () => showRedditPopup(post)); // Attach listener
+                    titleDiv.appendChild(titleSpan);
+
+                    const metaDiv = document.createElement('div'); metaDiv.classList.add('reddit-post-meta');
+                    const postDate = new Date(post.created_utc * 1000); // Convert UTC seconds to ms
+                    metaDiv.textContent = `by ${post.author} | ${post.score} points | ${postDate.toLocaleDateString()}`;
+
+                    postDiv.appendChild(titleDiv); postDiv.appendChild(metaDiv);
+                    redditPostsDiv.appendChild(postDiv);
+                });
+
+            } catch (error) {
+                console.error("Error fetching Reddit posts:", error);
+                setRedditStatus(`Error: ${error.message}. Check browser console for details.`, true);
+            }
+        }
+
+         // --- Reddit Popup Functions ---
+
+        /** Hides the Reddit popup */
+        function hideRedditPopup() {
+            if(popupOverlay) popupOverlay.classList.remove('active');
+        }
+
+        /** Shows the Reddit popup with post details */
+        function showRedditPopup(post) {
+            if(!popupOverlay || !popupTitle || !popupBody || !popupOriginalLink || !post) return; // Check elements exist
+
+            // Set Title
+            popupTitle.textContent = decodeHtmlEntities(post.title);
+
+            // Set Body Content
+            popupBody.innerHTML = ''; // Clear previous content
+            const postHint = post.post_hint;
+            const url = post.url_overridden_by_dest || post.url;
+
+            // 1. Selftext (HTML version if available)
+             if (post.selftext_html) {
+                 const decodedHtml = decodeHtmlEntities(post.selftext_html);
+                 popupBody.innerHTML = decodedHtml; // CAUTION: XSS risk
+            }
+            // 2. Image hint or URL ends with image extension
+            else if (postHint === 'image' || /\.(jpg|jpeg|png|gif)$/i.test(url)) {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = decodeHtmlEntities(post.title);
+                popupBody.appendChild(img);
+            }
+             // 3. Hosted Video hint (Reddit videos, streamable etc)
+             else if (postHint === 'hosted:video' && post.media?.reddit_video?.fallback_url) {
+                 const video = document.createElement('video');
+                 video.src = post.media.reddit_video.fallback_url;
+                 video.controls = true;
+                 video.muted = true; // Often required for autoplay/programmatic play
+                 popupBody.appendChild(video);
+             }
+            // 4. Rich Video hint (Youtube, etc) - Use oembed HTML
+             else if (postHint === 'rich:video' && post.media?.oembed?.html) {
+                 const embedHtml = decodeHtmlEntities(post.media.oembed.html);
+                 // Create a temporary div to parse the HTML string
+                 const tempDiv = document.createElement('div');
+                 tempDiv.innerHTML = embedHtml;
+                 // Append the parsed elements (usually an iframe)
+                 while (tempDiv.firstChild) {
+                    popupBody.appendChild(tempDiv.firstChild);
+                 }
+             }
+            // 5. Link hint or just a URL different from permalink
+            else if (postHint === 'link' || (url && url !== `https://www.reddit.com${post.permalink}`)) {
+                const linkPara = document.createElement('p');
+                linkPara.textContent = "This post links to: ";
+                const link = document.createElement('a');
+                link.href = url;
+                link.target = '_blank';
+                link.rel = 'noopener noreferrer';
+                link.textContent = url;
+                linkPara.appendChild(link);
+                popupBody.appendChild(linkPara);
+            }
+            // Fallback for other types or text-only with no selftext
+            else {
+                popupBody.innerHTML = '<p><i>No text content or preview available. View original post for details.</i></p>';
+            }
+
+            // Set Original Post Link
+            popupOriginalLink.href = `https://www.reddit.com${post.permalink}`;
+
+            // Show Popup
+            popupOverlay.classList.add('active');
+        }
+
+
         // --- Initialization & Listeners ---
-        document.addEventListener('DOMContentLoaded',()=>{
-            const sT=localStorage.getItem(THEME_KEY)||DEFAULT_THEME; setTheme(sT); loadPastebinButtons(); fetchRedditPosts();
-            let iT='';try{iT=window.location.hash.substring(1);}catch(e){} const vT=Array.from(tabButtons).map(b=>b.dataset.tab); if(!iT||!vT.includes(iT))iT=tabButtons[0]?.dataset.tab||'class'; showTab(iT);
-            tabButtons.forEach(b=>b.addEventListener('click',()=>showTab(b.dataset.tab)));
-            if(themeToggleButton)themeToggleButton.addEventListener('click',toggleTheme);
-            document.addEventListener('mousemove',(e)=>{if(crosshair){crosshair.style.left=`${e.clientX}px`;crosshair.style.top=`${e.clientY}px`;const cs=window.getComputedStyle(crosshair);if(cs.opacity==='0')crosshair.style.opacity='1';}}); document.addEventListener('mouseleave',()=>{if(crosshair)crosshair.style.opacity='0';});
-            if(copyPastebinBtn)copyPastebinBtn.addEventListener('click',copyPastebinContent); if(backToPastebinListBtn)backToPastebinListBtn.addEventListener('click',showPastebinListView); if(playAlarmBtn)playAlarmBtn.addEventListener('click',playRandomAlarm);
-            if(redditSearchBtn&&redditSearchInput){const tS=()=>fetchRedditPosts(redditSearchInput.value.trim()||null); redditSearchBtn.addEventListener('click',tS); redditSearchInput.addEventListener('keypress',(e)=>{if(e.key==='Enter')tS();});}
-            if(popupCloseBtn)popupCloseBtn.addEventListener('click',hideRedditPopup); if(popupOverlay)popupOverlay.addEventListener('click',(e)=>{if(e.target===popupOverlay)hideRedditPopup();});
-            if(weaoIframe){const sIT=()=>sendThemeToIframe(localStorage.getItem(THEME_KEY)||DEFAULT_THEME); weaoIframe.addEventListener('load',()=>setTimeout(sIT,200)); sIT();}
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set initial theme
+            const savedTheme = localStorage.getItem(THEME_KEY) || DEFAULT_THEME;
+            setTheme(savedTheme); // Calls sub-functions
+
+            // Load Pastebin buttons
+            loadPastebinButtons();
+
+            // Load initial Reddit posts
+            fetchRedditPosts();
+
+            // Set initial active tab from hash or default
+            let initialTab = ''; try { initialTab = window.location.hash.substring(1); } catch(e) {}
+            const validTabs = Array.from(tabButtons).map(btn => btn.dataset.tab);
+            if (!initialTab || !validTabs.includes(initialTab)) initialTab = tabButtons[0]?.dataset.tab || 'class';
+            showTab(initialTab);
+
+            // --- Event Listeners ---
+            tabButtons.forEach(button => { button.addEventListener('click', () => showTab(button.dataset.tab)); });
+            if(themeToggleButton) themeToggleButton.addEventListener('click', toggleTheme);
+
+            // Custom Cursor Follow
+            document.addEventListener('mousemove', (e) => {
+                if (crosshair) { crosshair.style.left = `${e.clientX}px`; crosshair.style.top = `${e.clientY}px`;
+                    const cs = window.getComputedStyle(crosshair); if (cs.opacity === '0') crosshair.style.opacity = '1';
+                }
+            });
+            document.addEventListener('mouseleave', () => { if (crosshair) crosshair.style.opacity = '0'; });
+
+            // Pastebin Tab buttons
+            if (copyPastebinBtn) copyPastebinBtn.addEventListener('click', copyPastebinContent);
+            if (backToPastebinListBtn) backToPastebinListBtn.addEventListener('click', showPastebinListView);
+            if (playAlarmBtn) playAlarmBtn.addEventListener('click', playRandomAlarm);
+
+            // Reddit Search Listeners
+            if (redditSearchBtn && redditSearchInput) {
+                const triggerSearch = () => fetchRedditPosts(redditSearchInput.value.trim() || null);
+                redditSearchBtn.addEventListener('click', triggerSearch);
+                redditSearchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') triggerSearch(); });
+            }
+
+            // Reddit Popup Listeners
+            if (popupCloseBtn) popupCloseBtn.addEventListener('click', hideRedditPopup);
+            if (popupOverlay) popupOverlay.addEventListener('click', (event) => { if (event.target === popupOverlay) hideRedditPopup(); });
+
+            // Weao Iframe Theme Sync
+            if (weaoIframe) {
+                const sendInitialTheme = () => sendThemeToIframe(localStorage.getItem(THEME_KEY) || DEFAULT_THEME);
+                weaoIframe.addEventListener('load', () => setTimeout(sendInitialTheme, 200));
+                sendInitialTheme();
+            }
         });
+
     </script>
 </body>
 </html>
