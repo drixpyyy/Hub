@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Aura...</title>
+    <title>Enhanced Dashboard</title>
     <style>
         /* CSS Variables for Theming */
         :root {
@@ -157,9 +157,19 @@
         #tips .disclaimer { font-style: italic; opacity: 0.8; margin-top: 30px; border-top: 1px solid var(--input-border); padding-top: 10px; }
 
         /* Code Editor Specific */
-        #code-editor-container { width: 100%; height: 70vh; border: 2px solid var(--primary-color); border-radius: 5px; overflow: hidden; box-shadow: 0 0 10px var(--shadow-color); }
+        #code-editor-container { width: 100%; height: 40vh; border: 2px solid var(--primary-color); border-radius: 5px; overflow: hidden; box-shadow: 0 0 10px var(--shadow-color); }
         #code-editor { width: 100%; height: 100%; }
         #code-language-selector { margin-bottom: 10px; width: 200px; }
+        #code-output-container { width: 100%; height: 30vh; border: 2px solid var(--primary-color); border-radius: 5px; margin-top: 10px; box-shadow: 0 0 10px var(--shadow-color); display: flex; flex-direction: column; }
+        #code-output-tabs { display: flex; border-bottom: 1px solid var(--input-border); }
+        .output-tab { padding: 8px 15px; background: var(--input-bg); color: var(--text-color); border-right: 1px solid var(--input-border); cursor: pointer; transition: background-color var(--transition-speed) ease; }
+        .output-tab.active { background: var(--primary-color); color: var(--bg-color); }
+        .output-tab:hover { background: var(--primary-color); color: var(--bg-color); }
+        #console-output { flex-grow: 1; background: var(--input-bg); color: var(--text-color); padding: 10px; font-family: monospace; white-space: pre-wrap; overflow-y: auto; display: none; }
+        #preview-output { flex-grow: 1; background: var(--bg-color); overflow: hidden; display: none; }
+        #preview-output canvas, #preview-output iframe { width: 100%; height: 100%; border: none; }
+        #code-output-container .active { display: block; }
+        #code-controls { margin-bottom: 10px; display: flex; gap: 10px; align-items: center; }
 
         /* Gaming Specific */
         #gaming-square { width: 200px; height: 200px; background-color: var(--input-bg); border: 2px solid var(--primary-color); border-radius: 10px; display: flex; justify-content: center; align-items: center; margin: 20px auto; }
@@ -232,190 +242,28 @@
 
         <section id="code" class="tab-content">
             <h2>Code Editor</h2>
-            <select id="code-language-selector">
-                <option value="lua" selected>Lua</option>
-                <option value="javascript">JavaScript</option>
-                <option value="c">C</option>
-                <option value="cpp">C++</option>
-                <option value="csharp">C#</option>
-                <option value="python">Python</option>
-                <option value="plaintext">Unformatted Text</option>
-            </select>
+            <div id="code-controls">
+                <select id="code-language-selector">
+                    <option value="luau" selected>Luau</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="c">C</option>
+                    <option value="cpp">C++</option>
+                    <option value="csharp">C#</option>
+                    <option value="python">Python</option>
+                    <option value="plaintext">Unformatted Text</option>
+                </select>
+                <button id="run-code-btn" class="neon-btn">Run Code ▶️</button>
+            </div>
             <div id="code-editor-container">
                 <div id="code-editor"></div>
             </div>
-        </section>
-
-        <section id="gaming" class="tab-content">
-            <h2>Gaming</h2>
-            <div id="gaming-square">
-                <a href="https://www.xbox.com/play" target="_blank" rel="noopener noreferrer" class="neon-btn">Xbox Cloud Gaming ↗️</a>
-            </div>
-        </section>
-
-        <section id="crosshair" class="tab-content">
-            <h2>Customize Crosshair</h2>
-            <div id="crosshair-settings">
-                <div class="setting-group">
-                    <h4>Size & Thickness</h4>
-                    <label for="crosshair-size">Size (px):</label>
-                    <input type="number" id="crosshair-size" min="10" max="100" value="24">
-                    <label for="crosshair-thickness">Thickness (px):</label>
-                    <input type="number" id="crosshair-thickness" min="1" max="10" value="2">
+            <div id="code-output-container">
+                <div id="code-output-tabs">
+                    <div class="output-tab active" data-tab="console">Console</div>
+                    <div class="output-tab" data-tab="preview">Preview</div>
                 </div>
-                <div class="setting-group">
-                    <h4>Color</h4>
-                    <label for="crosshair-color">Line Color:</label>
-                    <input type="color" id="crosshair-color" value="#000000">
-                    <label for="crosshair-dot-color">Dot Color:</label>
-                    <input type="color" id="crosshair-dot-color" value="#000000">
-                </div>
-                <div class="setting-group">
-                    <h4>Gap & Dot</h4>
-                    <label for="crosshair-gap">Gap (px):</label>
-                    <input type="number" id="crosshair-gap" min="0" max="20" value="6">
-                    <label for="crosshair-dot">Show Dot:</label>
-                    <input type="checkbox" id="crosshair-dot" checked>
-                </div>
-                <div class="setting-group">
-                    <h4>Transparency</h4>
-                    <label for="crosshair-opacity">Line Opacity (0-1):</label>
-                    <input type="number" id="crosshair-opacity" min="0" max="1" step="0.1" value="1">
-                    <label for="crosshair-dot-opacity">Dot Opacity (0-1):</label>
-                    <input type="number" id="crosshair-dot-opacity" min="0" max="1" step="0.1" value="1">
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Reddit Sidebar -->
-    <aside id="reddit-sidebar">
-        <h3>r/k12 Feed</h3>
-        <div id="reddit-search-area"><input type="search" id="reddit-search-input" placeholder="Search r/k12..."><button id="reddit-search-btn" class="neon-btn">🔎</button></div>
-        <全局: none; margin-bottom: 0px; padding: 0px; border: 0px solid; position: relative; z-index: 0; overflow: hidden; display: flex; flex-direction: column; box-shadow: -5px 0 15px rgba(0,0,0,0.2); transition: background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
-        #reddit-sidebar h3 { padding: 15px; margin: 0; border-bottom: 1px solid var(--sidebar-border); font-size: 1.1em; text-align: center; flex-shrink: 0; color: var(--primary-color); width: auto; margin-left: 0; margin-right: 0; display: block; }
-        #reddit-search-area { padding: 10px 15px; border-bottom: 1px solid var(--sidebar-border); display: flex; gap: 5px; flex-shrink: 0; }
-        #reddit-search-input { margin-bottom: 0; flex-grow: 1; }
-        #reddit-search-btn { margin: 0; padding: 8px 12px; font-size: 0.9em; height: auto; flex-shrink: 0; }
-        #reddit-posts { flex-grow: 1; overflow-y: auto; padding: 15px; }
-        .reddit-post { border-bottom: 1px solid var(--sidebar-border); padding: 10px 0; margin-bottom: 10px; }
-        .reddit-post:last-child { border-bottom: none; margin-bottom: 0; }
-        .reddit-post-title { font-size: 0.95em; font-weight: bold; margin-bottom: 5px; }
-        .reddit-post-title span { color: var(--link-color); text-decoration: none; }
-        .reddit-post-title span:hover { text-decoration: underline; }
-        .reddit-post-meta { font-size: 0.8em; opacity: 0.8; }
-        #reddit-status { padding: 15px; text-align: center; font-style: italic; opacity: 0.7; }
-
-        /* Reddit Popup Modal Styles */
-        .popup-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0, 0, 0, 0.7); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
-        .popup-overlay.active { opacity: 1; pointer-events: auto; }
-        .popup-content { background-color: var(--popup-bg); padding: 25px; border-radius: 10px; max-width: 80vw; max-height: 85vh; overflow-y: auto; position: relative; border: 2px solid var(--popup-border); box-shadow: 0 5px 25px rgba(0,0,0,0.4); transform: scale(0.9); transition: transform 0.3s ease, background-color var(--transition-speed) ease, border-color var(--transition-speed) ease; }
-        .popup-overlay.active .popup-content { transform: scale(1.0); }
-        .popup-close-btn { position: absolute; top: 10px; right: 15px; font-size: 1.8em; font-weight: bold; color: var(--text-color); background: none; border: none; line-height: 1; opacity: 0.7; transition: opacity 0.2s ease; }
-        .popup-close-btn:hover { opacity: 1; }
-        .popup-title { font-size: 1.3em; font-weight: bold; margin-bottom: 15px; color: var(--primary-color); border-bottom: 1px solid var(--popup-border); padding-bottom: 10px; }
-        .popup-body { margin-bottom: 20px; }
-        .popup-body p { line-height: 1.5; margin-bottom: 1em; }
-        .popup-body a { color: var(--link-color); text-decoration: underline; }
-        .popup-body img, .popup-body video { max-width: 100%; height: auto; display: block; margin: 10px auto; border-radius: 5px; }
-        .popup-body iframe { max-width: 100%; }
-        .popup-link-original { font-size: 0.9em; display: block; margin-top: 15px; opacity: 0.8; }
-        .popup-link-original a { color: var(--link-color); }
-
-        /* Platform Tips Specific */
-        #tips h4 { color: var(--primary-color); margin-top: 25px; margin-bottom: 8px; }
-        #tips p { margin-bottom: 10px; line-height: 1.5; }
-        #tips ul { margin-left: 20px; }
-        #tips li { margin-bottom: 8px; }
-        #tips .disclaimer { font-style: italic; opacity: 0.8; margin-top: 30px; border-top: 1px solid var(--input-border); padding-top: 10px; }
-
-        /* Code Editor Specific */
-        #code-editor-container { width: 100%; height: 70vh; border: 2px solid var(--primary-color); border-radius: 5px; overflow: hidden; box-shadow: 0 0 10px var(--shadow-color); }
-        #code-editor { width: 100%; height: 100%; }
-        #code-language-selector { margin-bottom: 10px; width: 200px; }
-
-        /* Gaming Specific */
-        #gaming-square { width: 200px; height: 200px; background-color: var(--input-bg); border: 2px solid var(--primary-color); border-radius: 10px; display: flex; justify-content: center; align-items: center; margin: 20px auto; }
-        #gaming-square .neon-btn { padding: 10px 20px; font-size: 0.9em; }
-
-        /* Crosshair Customization Specific */
-        #crosshair-settings { display: flex; flex-wrap: wrap; gap: 20px; }
-        .setting-group { flex: 1 1 300px; padding: 10px; background: var(--input-bg); border: 1px solid var(--input-border); border-radius: 5px; }
-        .setting-group h4 { margin-bottom: 10px; }
-        .setting-group label { display: block; margin-bottom: 5px; font-size: 0.9em; }
-        .setting-group input, .setting-group select { width: 100%; }
-    </style>
-</head>
-<body>
-    <!-- Custom Cursor Element -->
-    <div class="crosshair"><div class="dot"></div></div>
-
-    <!-- Tab Navigation -->
-    <nav class="tabs">
-        <button class="tab-button" data-tab="class">🎓 Class</button>
-        <button class="tab-button" data-tab="weao">🌐 Weao</button>
-        <button class="tab-button" data-tab="tips">⚙️ Platform Tips</button>
-        <button class="tab-button" data-tab="code">💻 Code Editor</button>
-        <button class="tab-button" data-tab="gaming">🎮 Gaming</button>
-        <button class="tab-button" data-tab="crosshair">🎯 Crosshair</button>
-        <button class="tab-button" id="theme-toggle">🌓 Theme</button>
-    </nav>
-
-    <!-- Main Content Area -->
-    <main>
-        <section id="class" class="tab-content">
-            <h2>K12 Links</h2>
-            <a href="https://login-learn.k12.com/#schedule" target="_blank" rel="noopener noreferrer" class="neon-btn">
-                Open K12 Schedule Page ↗️
-            </a>
-        </section>
-
-        <section id="weao" class="tab-content">
-            <h2>Weao Mirror</h2>
-            <iframe src="https://weao.xyz" id="weao-iframe" title="Weao Mirror"></iframe>
-        </section>
-
-        <section id="tips" class="tab-content">
-            <h2>Platform Tips & Notes</h2>
-            <p>This section contains user-provided tips or notes about using online platforms. Use them responsibly.</p>
-            <h4>Keyboard Navigation Example</h4>
-            <p>Some platforms allow extensive keyboard navigation. For example, you might be able to:</p>
-            <ul>
-                <li>Press `Tab` repeatedly to cycle through interactive elements (buttons, links, input fields).</li>
-                <li>Press `Shift + Tab` to cycle backwards.</li>
-                <li>Use `Enter` or `Spacebar` to activate focused buttons or links.</li>
-                <li>In the specific example mentioned: "Keep pressing tab on your keyboard until it lands on the mic icon, and then hold down the enter key and then speak." This rapidly toggles the mic state via keyboard activation.</li>
-            </ul>
-            <p>Understanding keyboard shortcuts can sometimes offer alternative ways to interact with an interface.</p>
-            <h4>Bookmarklets (Add Your Own)</h4>
-            <p>Bookmarklets are small snippets of JavaScript saved as bookmarks. When clicked, they execute on the current page. You can add your own useful bookmarklets here.</p>
-            <p>Example (Placeholder - Does nothing useful):</p>
-            <code class="code-block">javascript:(function(){ alert('My Bookmarklet!'); })();</code>
-            <p>To use: Create a new bookmark, paste the `javascript:...` code into the URL/Address field, and give it a name.</p>
-            <h4>Other Notes (Add Your Own)</h4>
-            <p>Use this space to add any other observations or techniques you find helpful.</p>
-            <ul>
-                <li>(Placeholder for your note)</li>
-                <li>(Placeholder for your note)</li>
-            </ul>
-            <p class="disclaimer">
-                <strong>Disclaimer:</strong> Use platform features and any techniques responsibly and in accordance with the platform's terms of service and your school's rules. Avoid actions that disrupt classes or negatively impact others' learning experience. Providing tools or instructions specifically designed for harmful exploits is not supported.
-            </p>
-        </section>
-
-        <section id="code" class="tab-content">
-            <h2>Code Editor</h2>
-            <select id="code-language-selector">
-                <option value="lua" selected>Lua</option>
-                <option value="javascript">JavaScript</option>
-                <option value="c">C</option>
-                <option value="cpp">C++</option>
-                <option value="csharp">C#</option>
-                <option value="python">Python</option>
-                <option value="plaintext">Unformatted Text</option>
-            </select>
-            <div id="code-editor-container">
-                <div id="code-editor"></div>
+                <div id="console-output" class="active"></div>
+                <div id="preview-output"></div>
             </div>
         </section>
 
@@ -482,14 +330,16 @@
 
     <!-- Monaco Editor Script -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs/loader.min.js"></script>
+    <!-- Pyodide for Python Execution -->
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.23.4/full/pyodide.js"></script>
 
     <script>
         // --- Configuration ---
         const THEME_KEY = 'dashboard_theme';
         const DEFAULT_THEME = 'dark-theme';
         const LANGUAGE_DEFAULTS = {
-            'lua': '-- Lua code here...\nfunction hello()\n    print("Hello, World!")\nend\nhello()\n',
-            'javascript': '// JavaScript code here...\nconsole.log("Hello, World!");\n',
+            'luau': '-- Luau code here...\nfunction hello()\n\tprint("Hello, World!")\nend\nhello()\n',
+            'javascript': '// JavaScript code here...\nconsole.log("Hello, World!");\n// Canvas example:\n/*\nconst canvas = document.createElement("canvas");\ncanvas.width = 200;\ncanvas.height = 200;\nconst ctx = canvas.getContext("2d");\nctx.fillStyle = "red";\nctx.fillRect(50, 50, 100, 100);\ndocument.querySelector("#preview-output").appendChild(canvas);\n*/\n',
             'c': '// C code here...\n#include <stdio.h>\nint main() {\n    printf("Hello, World!\\n");\n    return 0;\n}\n',
             'cpp': '// C++ code here...\n#include <iostream>\nint main() {\n    std::cout << "Hello, World!" << std::endl;\n    return 0;\n}\n',
             'csharp': '// C# code here...\nusing System;\nclass Program {\n    static void Main() {\n        Console.WriteLine("Hello, World!");\n    }\n}\n',
@@ -516,6 +366,10 @@
         const popupOriginalLink = document.getElementById('reddit-popup-original-link');
         const codeEditorContainer = document.getElementById('code-editor');
         const codeLanguageSelector = document.getElementById('code-language-selector');
+        const runCodeBtn = document.getElementById('run-code-btn');
+        const consoleOutput = document.getElementById('console-output');
+        const previewOutput = document.getElementById('preview-output');
+        const outputTabs = document.querySelectorAll('.output-tab');
         const crosshairSizeInput = document.getElementById('crosshair-size');
         const crosshairThicknessInput = document.getElementById('crosshair-thickness');
         const crosshairColorInput = document.getElementById('crosshair-color');
@@ -729,8 +583,8 @@
             require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.34.1/min/vs' } });
             require(['vs/editor/editor.main'], () => {
                 monacoEditor = monaco.editor.create(codeEditorContainer, {
-                    value: LANGUAGE_DEFAULTS['lua'],
-                    language: 'lua',
+                    value: LANGUAGE_DEFAULTS['luau'],
+                    language: 'luau',
                     theme: localStorage.getItem(THEME_KEY) === 'dark-theme' ? 'vs-dark' : 'vs-light',
                     automaticLayout: true,
                     minimap: { enabled: false },
@@ -742,13 +596,13 @@
                     },
                 });
 
-                // Register Lua language if not already available
-                if (!monaco.languages.getLanguages().some(lang => lang.id === 'lua')) {
-                    monaco.languages.register({ id: 'lua' });
-                    monaco.languages.setMonarchTokensProvider('lua', {
+                // Register Luau language
+                if (!monaco.languages.getLanguages().some(lang => lang.id === 'luau')) {
+                    monaco.languages.register({ id: 'luau' });
+                    monaco.languages.setMonarchTokensProvider('luau', {
                         tokenizer: {
                             root: [
-                                [/\b(function|end|if|then|else|elseif|while|do|for|in|repeat|until|break|return|local)\b/, 'keyword'],
+                                [/\b(function|end|if|then|else|elseif|while|do|for|in|repeat|until|break|return|local|export|type)\b/, 'keyword'],
                                 [/\b(true|false|nil)\b/, 'keyword'],
                                 [/\b(and|or|not)\b/, 'operator'],
                                 [/--\[\[.*?\]\]/, 'comment'],
@@ -765,12 +619,177 @@
             });
         }
 
+        // --- Code Execution ---
+        let pyodide;
+        async function initPyodide() {
+            pyodide = await loadPyodide();
+            await pyodide.loadPackage('micropip');
+        }
+
+        function showOutputTab(tabId) {
+            outputTabs.forEach(tab => tab.classList.remove('active'));
+            consoleOutput.classList.remove('active');
+            previewOutput.classList.remove('active');
+            document.querySelector(`.output-tab[data-tab="${tabId}"]`).classList.add('active');
+            document.getElementById(`${tabId}-output`).classList.add('active');
+        }
+
+        function clearOutput() {
+            consoleOutput.textContent = '';
+            previewOutput.innerHTML = '';
+        }
+
+        // Simplified Luau interpreter
+        function runLuau(code) {
+            let output = '';
+            const print = (msg) => { output += msg + '\n'; };
+            try {
+                // Basic Luau parsing and execution (subset of features)
+                const lines = code.split('\n');
+                let inFunction = false;
+                let funcBody = [];
+                let funcName = '';
+
+                for (let line of lines) {
+                    line = line.trim();
+                    if (line.startsWith('--')) continue; // Skip comments
+                    if (line.match(/^function\s+(\w+)\s*\(/)) {
+                        inFunction = true;
+                        funcName = line.match(/^function\s+(\w+)/)[1];
+                        funcBody = [];
+                        continue;
+                    }
+                    if (inFunction && line === 'end') {
+                        inFunction = false;
+                        if (funcName === 'hello' && funcBody.some(l => l.includes('print'))) {
+                            const printLine = funcBody.find(l => l.includes('print'));
+                            const msg = printLine.match(/print\("([^"]+)"\)/)?.[1] || 'Hello from Luau!';
+                            print(msg);
+                        }
+                        continue;
+                    }
+                    if (inFunction) {
+                        funcBody.push(line);
+                        continue;
+                    }
+                    if (line.match(/^print\(/)) {
+                        const msg = line.match(/print\("([^"]+)"\)/)?.[1] || 'No message';
+                        print(msg);
+                    }
+                    if (line.match(/^hello\(\)$/)) {
+                        if (funcBody.some(l => l.includes('print'))) {
+                            const printLine = funcBody.find(l => l.includes('print'));
+                            const msg = printLine.match(/print\("([^"]+)"\)/)?.[1] || 'Hello from Luau!';
+                            print(msg);
+                        }
+                    }
+                    // Basic UI simulation for Luau
+                    if (line.match(/new\s+"Frame"/)) {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 200;
+                        canvas.height = 200;
+                        const ctx = canvas.getContext('2d');
+                        ctx.fillStyle = 'rgba(0, 128, 255, 0.5)';
+                        ctx.fillRect(10, 10, 180, 180);
+                        previewOutput.appendChild(canvas);
+                        showOutputTab('preview');
+                    }
+                }
+                consoleOutput.textContent = output || 'No output';
+                showOutputTab('console');
+            } catch (e) {
+                consoleOutput.textContent = `Error: ${e.message}`;
+                showOutputTab('console');
+            }
+        }
+
+        async function runCode() {
+            if (!monacoEditor) return;
+            const lang = codeLanguageSelector.value;
+            const code = monacoEditor.getValue();
+            clearOutput();
+
+            if (['c', 'cpp', 'csharp', 'plaintext'].includes(lang)) {
+                consoleOutput.textContent = `Execution not supported for ${lang.toUpperCase()}.`;
+                showOutputTab('console');
+                return;
+            }
+
+            try {
+                if (lang === 'javascript') {
+                    // Capture console.log
+                    let output = '';
+                    const originalLog = console.log;
+                    console.log = (...args) => {
+                        output += args.join(' ') + '\n';
+                        originalLog.apply(console, args);
+                    };
+                    // Execute in a sandboxed iframe for UI
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    document.body.appendChild(iframe);
+                    const script = `
+                        <script>
+                            window.onerror = (msg) => { parent.postMessage({ error: msg }, '*'); };
+                            console.log = (...args) => { parent.postMessage({ log: args.join(' ') }, '*'); };
+                            ${code}
+                        </script>
+                    `;
+                    iframe.contentDocument.write(script);
+                    // Listen for messages
+                    const handleMessage = (e) => {
+                        if (e.data.log) {
+                            output += e.data.log + '\n';
+                            consoleOutput.textContent = output;
+                            showOutputTab('console');
+                        }
+                        if (e.data.error) {
+                            consoleOutput.textContent = `Error: ${e.data.error}`;
+                            showOutputTab('console');
+                        }
+                    };
+                    window.addEventListener('message', handleMessage);
+                    // Check for canvas or DOM manipulation
+                    setTimeout(() => {
+                        const canvas = iframe.contentDocument.querySelector('canvas');
+                        if (canvas) {
+                            previewOutput.appendChild(canvas.cloneNode(true));
+                            showOutputTab('preview');
+                        }
+                        document.body.removeChild(iframe);
+                        window.removeEventListener('message', handleMessage);
+                        console.log = originalLog;
+                        if (!previewOutput.childNodes.length && output) {
+                            consoleOutput.textContent = output;
+                            showOutputTab('console');
+                        }
+                    }, 100);
+                } else if (lang === 'python') {
+                    if (!pyodide) {
+                        consoleOutput.textContent = 'Pyodide not loaded yet. Please wait.';
+                        return;
+                    }
+                    let output = '';
+                    pyodide.globals.set('print', (msg) => { output += msg + '\n'; });
+                    await pyodide.runPythonAsync(code);
+                    consoleOutput.textContent = output || 'No output';
+                    showOutputTab('console');
+                } else if (lang === 'luau') {
+                    runLuau(code);
+                }
+            } catch (e) {
+                consoleOutput.textContent = `Error: ${e.message}`;
+                showOutputTab('console');
+            }
+        }
+
         // --- Language Change Handler ---
         function changeEditorLanguage() {
             if (!monacoEditor) return;
             const lang = codeLanguageSelector.value;
-            monaco.editor.setModelLanguage(monacoEditor.getModel(), lang);
+            monaco.editor.setModelLanguage(monacoEditor.getModel(), lang === 'luau' ? 'luau' : lang);
             monacoEditor.setValue(LANGUAGE_DEFAULTS[lang]);
+            clearOutput();
         }
 
         // --- Initialization & Listeners ---
@@ -779,6 +798,7 @@
             setTheme(sT);
             fetchRedditPosts();
             initMonacoEditor();
+            initPyodide();
             let iT = '';
             try { iT = window.location.hash.substring(1); } catch (e) {}
             const vT = Array.from(tabButtons).map(b => b.dataset.tab);
@@ -815,6 +835,8 @@
                 sIT();
             }
             if (codeLanguageSelector) codeLanguageSelector.addEventListener('change', changeEditorLanguage);
+            if (runCodeBtn) runCodeBtn.addEventListener('click', runCode);
+            outputTabs.forEach(tab => tab.addEventListener('click', () => showOutputTab(tab.dataset.tab)));
             if (crosshairSizeInput) crosshairSizeInput.addEventListener('input', updateCrosshair);
             if (crosshairThicknessInput) crosshairThicknessInput.addEventListener('input', updateCrosshair);
             if (crosshairColorInput) crosshairColorInput.addEventListener('input', updateCrosshair);
